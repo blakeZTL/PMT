@@ -9,11 +9,23 @@ namespace ProgramManagementTool
     /// Plugin to ensure that the Assigned SME selected for a SME Request is valid for the related Resource Request.
     /// It is registered on the pre-validation stage of the Create and Update messages of the SME Request entity.
     /// Requires the following unsecure configuration (delimited by semi-colons):
-    /// - Publisher Prefix
-    /// - Assigned SME lookup logical name
+    /// <list type="bullet">
+    /// <item>
+    /// <description>Publisher Prefix</description>
+    /// </item>
+    /// <item>
+    /// <description>Assigned SME lookup logical name</description>
+    /// </item>
+    /// </list>
     /// The plugin is intended to gatekeep two lookup fields:
-    /// - The Assigned SME lookup on the SME Request
-    /// - The Requested SME lookup on the SME Request
+    /// <list type="bullet">
+    /// <item>
+    /// <description>The Assigned SME lookup on the SME Request</description>
+    /// </item>
+    /// <item>
+    /// <description>The Requested SME lookup on the SME Request</description>
+    /// </item>
+    /// </list>
     /// </summary>
     public class HandleAssignedSmeSelectionPlugin : PluginBase
     {
@@ -21,11 +33,20 @@ namespace ProgramManagementTool
         private readonly string _assignedSmeRefLogicalName;
         private string _error;
 
-        public HandleAssignedSmeSelectionPlugin(string unsecureConfig, string secureConfig) : base(typeof(HandleAssignedSmeSelectionPlugin))
+        public HandleAssignedSmeSelectionPlugin(string unsecureConfig, string secureConfig)
+            : base(typeof(HandleAssignedSmeSelectionPlugin))
         {
             string[] unsecureConfigs = unsecureConfig.Split(new char[] { ';' });
-            _publisherPrefix = unsecureConfigs[0] ?? throw new InvalidPluginExecutionException("Unsecure configuration needs the publisher prefix");
-            _assignedSmeRefLogicalName = unsecureConfigs[1] ?? throw new InvalidPluginExecutionException("Unsecure configuration needs the relevant Assigned SME lookup logical name");
+            _publisherPrefix =
+                unsecureConfigs[0]
+                ?? throw new InvalidPluginExecutionException(
+                    "Unsecure configuration needs the publisher prefix"
+                );
+            _assignedSmeRefLogicalName =
+                unsecureConfigs[1]
+                ?? throw new InvalidPluginExecutionException(
+                    "Unsecure configuration needs the relevant Assigned SME lookup logical name"
+                );
         }
 
         protected override void ExecuteCdsPlugin(ILocalPluginContext localPluginContext)
@@ -53,17 +74,25 @@ namespace ProgramManagementTool
                 throw new InvalidPluginExecutionException(_error);
             }
 
-            tracer.Trace($"Publisher Prefix: {_publisherPrefix}, Assigned SME Reference: {_assignedSmeRefLogicalName}");
+            tracer.Trace(
+                $"Publisher Prefix: {_publisherPrefix}, Assigned SME Reference: {_assignedSmeRefLogicalName}"
+            );
 
-            targetEntity.TryGetAttributeValue($"{_publisherPrefix}_{_assignedSmeRefLogicalName}", out EntityReference assignedSmeRef);
+            targetEntity.TryGetAttributeValue(
+                $"{_publisherPrefix}_{_assignedSmeRefLogicalName}",
+                out EntityReference assignedSmeRef
+            );
             if (assignedSmeRef == null)
             {
                 tracer.Trace("Assigned SME reference not found on target. Exiting");
                 return;
             }
 
-            targetEntity.TryGetAttributeValue($"{_publisherPrefix}_resourcerequest", out EntityReference resourceRequestRef);
-            if (resourceRequestRef == null && context.MessageName=="Update")
+            targetEntity.TryGetAttributeValue(
+                $"{_publisherPrefix}_resourcerequest",
+                out EntityReference resourceRequestRef
+            );
+            if (resourceRequestRef == null && context.MessageName == "Update")
             {
                 context.PreEntityImages.TryGetValue("PreImage", out Entity preImage);
                 if (preImage == null)
@@ -73,10 +102,13 @@ namespace ProgramManagementTool
                     throw new InvalidPluginExecutionException(_error);
                 }
 
-                preImage.TryGetAttributeValue($"{_publisherPrefix}_resourcerequest", out resourceRequestRef);
+                preImage.TryGetAttributeValue(
+                    $"{_publisherPrefix}_resourcerequest",
+                    out resourceRequestRef
+                );
 
-                if ( resourceRequestRef == null)
-                {                    
+                if (resourceRequestRef == null)
+                {
                     _error = "Resource Request lookup value not found in Target or was null";
                     tracer.Trace(_error);
                     throw new InvalidPluginExecutionException(_error);
@@ -90,17 +122,21 @@ namespace ProgramManagementTool
             }
 
             EntityCollection availableSmes;
-            QueryExpression availableSmesQuery = new QueryExpression($"{_publisherPrefix}_assignedsme")
+            QueryExpression availableSmesQuery = new QueryExpression(
+                $"{_publisherPrefix}_assignedsme"
+            )
             {
                 ColumnSet = new ColumnSet($"{_publisherPrefix}_assignedsmeid"),
-                LinkEntities = {
+                LinkEntities =
+                {
                     new LinkEntity()
                     {
-                        LinkFromEntityName= $"{_publisherPrefix}_assignedsme",
-                        LinkFromAttributeName= $"{_publisherPrefix}_assignedsmeid",
-                        LinkToEntityName= $"{_publisherPrefix}_resourcerequest_{_publisherPrefix}_assignedsme",
-                        LinkToAttributeName= $"{_publisherPrefix}_assignedsmeid",
-                        LinkCriteria=
+                        LinkFromEntityName = $"{_publisherPrefix}_assignedsme",
+                        LinkFromAttributeName = $"{_publisherPrefix}_assignedsmeid",
+                        LinkToEntityName =
+                            $"{_publisherPrefix}_resourcerequest_{_publisherPrefix}_assignedsme",
+                        LinkToAttributeName = $"{_publisherPrefix}_assignedsmeid",
+                        LinkCriteria =
                         {
                             Conditions =
                             {
@@ -108,11 +144,11 @@ namespace ProgramManagementTool
                                     $"{_publisherPrefix}_resourcerequestid",
                                     ConditionOperator.Equal,
                                     resourceRequestRef.Id
-                                )
-                            }
-                        }
-                    }
-                }
+                                ),
+                            },
+                        },
+                    },
+                },
             };
 
             try
@@ -127,7 +163,8 @@ namespace ProgramManagementTool
 
             if (availableSmes.Entities.Count == 0)
             {
-                _error = $"No available SMES registered for Resource Request ({resourceRequestRef.Id})";
+                _error =
+                    $"No available SMES registered for Resource Request ({resourceRequestRef.Id})";
                 tracer.Trace(_error);
                 throw new InvalidPluginExecutionException(_error);
             }
@@ -136,15 +173,16 @@ namespace ProgramManagementTool
 
             if (availableSmeIds.Contains(assignedSmeRef.Id))
             {
-                tracer.Trace($"Valid SME selected for {_publisherPrefix}_{_assignedSmeRefLogicalName}");
+                tracer.Trace(
+                    $"Valid SME selected for {_publisherPrefix}_{_assignedSmeRefLogicalName}"
+                );
                 return;
             }
 
-            _error = $"Invalid Assigned SME ({assignedSmeRef.Id}) selected for Resource Request ({resourceRequestRef.Id})";
+            _error =
+                $"Invalid Assigned SME ({assignedSmeRef.Id}) selected for Resource Request ({resourceRequestRef.Id})";
             tracer.Trace(_error);
             throw new InvalidPluginExecutionException(_error);
-
         }
-
     }
 }

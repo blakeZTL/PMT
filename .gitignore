@@ -1,3 +1,8 @@
 .vscode
 Webresources/js
 node_modules
+/plugins/ProgramManagementTool/ProgramManagementTool/BlakeBradford.snk
+/plugins/ProgramManagementTool/.vs/ProgramManagementTool
+/plugins/ProgramManagementTool/ProgramManagementTool/obj/Debug
+/plugins/ProgramManagementTool/ProgramManagementTool/bin
+/plugins/ProgramManagementTool/ProgramManagementTool/obj

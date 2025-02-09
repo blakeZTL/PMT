@@ -92,33 +92,34 @@ namespace ProgramManagementTool
                 $"{_publisherPrefix}_resourcerequest",
                 out EntityReference resourceRequestRef
             );
-            if (resourceRequestRef == null && context.MessageName == "Update")
-            {
-                context.PreEntityImages.TryGetValue("PreImage", out Entity preImage);
-                if (preImage == null)
-                {
-                    _error = "PreImage was null on update";
-                    tracer.Trace(_error);
-                    throw new InvalidPluginExecutionException(_error);
-                }
 
-                preImage.TryGetAttributeValue(
-                    $"{_publisherPrefix}_resourcerequest",
-                    out resourceRequestRef
-                );
+            if (resourceRequestRef == null)
+            {
+                if (context.MessageName == "Update")
+                {
+                    context.PreEntityImages.TryGetValue("PreImage", out Entity preImage);
+                    if (preImage == null)
+                    {
+                        _error = "PreImage was null on update";
+                        tracer.Trace(_error);
+                        throw new InvalidPluginExecutionException(_error);
+                    }
+
+                    preImage.TryGetAttributeValue(
+                        $"{_publisherPrefix}_resourcerequest",
+                        out resourceRequestRef
+                    );
+                }
 
                 if (resourceRequestRef == null)
                 {
-                    _error = "Resource Request lookup value not found in Target or was null";
+                    _error =
+                        context.MessageName == "Create"
+                            ? "Resource Request cannot be null on create if a SME is selected"
+                            : "Resource Request lookup value not found in Target or was null";
                     tracer.Trace(_error);
                     throw new InvalidPluginExecutionException(_error);
                 }
-            }
-            else if (resourceRequestRef == null && context.MessageName == "Create")
-            {
-                _error = "Resource Request cannot be null on create if a SME is selected";
-                tracer.Trace(_error);
-                throw new InvalidPluginExecutionException(_error);
             }
 
             EntityCollection availableSmes;
@@ -129,7 +130,7 @@ namespace ProgramManagementTool
                 ColumnSet = new ColumnSet($"{_publisherPrefix}_assignedsmeid"),
                 LinkEntities =
                 {
-                    new LinkEntity()
+                    new LinkEntity
                     {
                         LinkFromEntityName = $"{_publisherPrefix}_assignedsme",
                         LinkFromAttributeName = $"{_publisherPrefix}_assignedsmeid",

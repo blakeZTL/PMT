@@ -5,6 +5,16 @@ using Microsoft.Xrm.Sdk.Query;
 
 namespace ProgramManagementTool
 {
+    /// <summary>
+    /// Plugin to ensure that the Assigned SME selected for a SME Request is valid to the related Resource Request.
+    /// It is registered on the pre-validation stage of the Create and Update messages of the SME Request entity.
+    /// Requires the following unsecure configuration (delimited by semi-colons):
+    /// - Publisher Prefix
+    /// - Assigned SME lookup logical name
+    /// The plugin is intended to gatekeep two lookup fields:
+    /// - The Assigned SME lookup on the SME Request
+    /// - The Requested SME lookup on the SME Request
+    /// </summary>
     public class HandleAssignedSmeSelectionPlugin : PluginBase
     {
         private readonly string _publisherPrefix;
@@ -58,12 +68,6 @@ namespace ProgramManagementTool
                 context.PreEntityImages.TryGetValue("PreImage", out Entity preImage);
                 if (preImage == null)
                 {
-                    tracer.Trace("Images Found:");
-                    foreach (string key in context.PreEntityImages.Keys)
-                    {                        
-                        tracer.Trace(key);
-                    }
-
                     _error = "PreImage was null on update";
                     tracer.Trace(_error);
                     throw new InvalidPluginExecutionException(_error);
@@ -72,12 +76,7 @@ namespace ProgramManagementTool
                 preImage.TryGetAttributeValue($"{_publisherPrefix}_resourcerequest", out resourceRequestRef);
 
                 if ( resourceRequestRef == null)
-                {
-                    tracer.Trace("Keys in PreImage:");
-                    foreach (var attr in preImage.Attributes)
-                    {
-                        tracer.Trace(attr.Key);
-                    }
+                {                    
                     _error = "Resource Request lookup value not found in Target or was null";
                     tracer.Trace(_error);
                     throw new InvalidPluginExecutionException(_error);

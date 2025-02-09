@@ -6,7 +6,7 @@ using Microsoft.Xrm.Sdk.Query;
 namespace ProgramManagementTool
 {
     /// <summary>
-    /// Plugin to ensure that the Assigned SME selected for a SME Request is valid to the related Resource Request.
+    /// Plugin to ensure that the Assigned SME selected for a SME Request is valid for the related Resource Request.
     /// It is registered on the pre-validation stage of the Create and Update messages of the SME Request entity.
     /// Requires the following unsecure configuration (delimited by semi-colons):
     /// - Publisher Prefix

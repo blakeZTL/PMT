@@ -3,7 +3,7 @@
 
 ## Overview
 
-The [`src/forms/sme-request.ts`](tree/main/ts/src/forms/sme-request.ts) script is designed to filter the available SMEs for a Resource Request in the SME Request form. It dynamically updates the lookup controls for the Requested SME and Assigned SME fields based on the selected Resource Request.
+The [`src/forms/sme-request.ts`](/src/forms/sme-request.ts) script is designed to filter the available SMEs for a Resource Request in the SME Request form. It dynamically updates the lookup controls for the Requested SME and Assigned SME fields based on the selected Resource Request.
 
 ## Functionality
 

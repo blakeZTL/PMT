@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="PMT" constructor="AvailableSmeLookupBasic" version="0.0.10" display-name-key="Available Sme Lookup Basic" description-key="AvailableSmeLookup description" control-type="standard" >
+  <control namespace="PMT" constructor="AvailableSmeLookupBasic" version="0.0.12" display-name-key="Available Sme Lookup Basic" description-key="AvailableSmeLookup description" control-type="standard" >
     <!--external-service-usage node declares whether this 3rd party PCF control is using external service or not, if yes, this control will be considered as premium and please also add the external domain it is using.
     If it is not using any external service, please set the enabled="false" and DO NOT add any domain below. The "enabled" will be false by default.
     Example1:
@@ -18,7 +18,7 @@
       -->
     </external-service-usage>
     <!-- property node identifies a specific, configurable piece of data that the control expects from CDS -->
-    <property name="smeRequestId" display-name-key="SME Request ID" description-key="The field that is the ID of the SME Request" of-type="SingleLine.Text" usage="bound" required="true" />
+    <property name="smeRequestId" display-name-key="SME Request ID" description-key="The field that is the ID of the SME Request" of-type="SingleLine.Text" usage="input" required="true" />
     <property name="assignedSmeLookup" display-name-key="Assigned SME Lookup" description-key="The field that is a lookup up to Assigned SME" of-type="Lookup.Simple" usage="bound" required="true" />
     <property name="resourceRequestLookup" display-name-key="Resource Request Lookup" description-key="The field that is a lookup up to Resource Request" of-type="Lookup.Simple" usage="bound" required="true" />
     <property name="smeRequestStartDate" display-name-key="SME Request Start Date" description-key="The field that is the start date of the SME Request" of-type="DateAndTime.DateOnly" usage="bound" required="true" />

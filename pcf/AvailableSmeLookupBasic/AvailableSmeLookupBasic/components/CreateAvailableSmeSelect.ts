@@ -1,13 +1,19 @@
+import { ResourceRequest } from "../types/ResourceRequest";
+
 export function createAvailableSmeSelect(
   selectedItem: ComponentFramework.LookupValue | undefined,
   availableSmes: ComponentFramework.LookupValue[],
   container: HTMLDivElement,
+  filteringSmes: boolean,
   onChange: (newValue: ComponentFramework.LookupValue | undefined) => void
 ): void {
   if (!container) {
     console.error("Container element is null or undefined.");
     return;
   }
+  console.debug("createAvailableSmeSelect", selectedItem, availableSmes);
+  const parentContainer = document.createElement("div");
+  parentContainer.id = "availableSmeLookupBasic_pcfContainer";
 
   const elementContainer = document.createElement("div");
   elementContainer.role = "presentation";
@@ -47,6 +53,20 @@ export function createAvailableSmeSelect(
 
   selectContainer.appendChild(selectElement);
   elementContainer.appendChild(selectContainer);
+  parentContainer.appendChild(elementContainer);
 
-  container.appendChild(elementContainer);
+  const warningContainer = document.createElement("div");
+  warningContainer.id = "availableSmeWarningContainer";
+
+  const warningMessage = document.createElement("p");
+  warningMessage.id = "availableSmeWarningMessage";
+  warningMessage.textContent =
+    "*Selected SME not available for this Resource Request";
+
+  if (!filteringSmes) {
+    warningContainer.appendChild(warningMessage);
+    parentContainer.appendChild(warningContainer);
+  }
+
+  container.appendChild(parentContainer);
 }

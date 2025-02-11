@@ -15,7 +15,7 @@ export class ResourceRequest {
   public id: string;
   public name: string;
   public program: Program;
-  public availableSmes: AssignedSme[];
+  public availableSmes: AvailableSmeLookupValues;
   private _context: ComponentFramework.Context<IInputs>;
   private _publisherPrefix: string;
 
@@ -31,14 +31,19 @@ export class ResourceRequest {
       id: "",
       name: "",
     };
-    this.availableSmes = [];
+    this.availableSmes = new AvailableSmeLookupValues();
     this._context = context;
     this._publisherPrefix = this.entityType.split("_")[0];
-    this._fetchAndSetResourceRequest();
-    this._fetchAndSetAvailableSmes();
+  }
+
+  public async init(): Promise<void> {
+    console.debug("ResourceRequest.init");
+    await this._fetchAndSetResourceRequest();
+    await this._fetchAndSetAvailableSmes();
   }
 
   private async _fetchAndSetResourceRequest() {
+    console.debug("ResourceRequest_fetchAndSetResourceRequest");
     let response: ComponentFramework.WebApi.RetrieveMultipleResponse;
     try {
       const fetchXml = fetchResourceRequestFetchBuilder(
@@ -49,7 +54,6 @@ export class ResourceRequest {
         this.entityType,
         `?fetchXml=${encodeURIComponent(fetchXml)}`
       );
-      console.debug("fetchResourceRequest entities: ", response.entities);
       if (response.entities.length != 1) {
         console.error("Resource Request not found");
         return;
@@ -62,12 +66,14 @@ export class ResourceRequest {
         name: entity[`program.${this._publisherPrefix}_name`],
       };
     } catch (error) {
+      console.debug("Error in ResourceRequest_fetchAndSetResourceRequest");
       console.error(error);
       return;
     }
   }
 
   private async _fetchAndSetAvailableSmes() {
+    console.debug("ResourceRequest._fetchAndSetAvailableSmes");
     let response: ComponentFramework.WebApi.RetrieveMultipleResponse;
     try {
       const fetchXml = filterForAvailableSmeFetchBuilder(
@@ -75,20 +81,41 @@ export class ResourceRequest {
         this.id
       );
       response = await this._context.webAPI.retrieveMultipleRecords(
-        this.entityType,
+        `${this._publisherPrefix}_assignedsme`,
         `?fetchXml=${encodeURIComponent(fetchXml)}`
       );
-      console.debug("_fetchAndSetAvailableSmes entities: ", response.entities);
-      this.availableSmes = response.entities.map((entity) => {
-        const sme = new AssignedSme();
-        sme.id = entity[`${this._publisherPrefix}_assignedsmeid`];
-        sme.name = entity[`${this._publisherPrefix}_name`];
-        sme.entityType = this.entityType;
-        return sme;
-      });
-      console.debug("this.availableSmes", this.availableSmes);
+      this.availableSmes = new AvailableSmeLookupValues(
+        ...response.entities.map((entity) => {
+          const sme = new AssignedSme();
+          sme.id = entity[`${this._publisherPrefix}_assignedsmeid`];
+          sme.name = entity[`${this._publisherPrefix}_name`];
+          sme.entityType = this.entityType;
+          return sme;
+        })
+      );
     } catch (error) {
+      console.debug("Error in ResourceRequest_fetchAndSetAvailableSmes");
       console.error(error);
     }
+  }
+}
+
+export class AvailableSmeLookupValues extends Array<AssignedSme> {
+  constructor(...items: AssignedSme[]) {
+    super(...items);
+    Object.setPrototypeOf(
+      this,
+      Object.create(AvailableSmeLookupValues.prototype)
+    );
+  }
+
+  public asLookupValues(): ComponentFramework.LookupValue[] {
+    return this.map((sme) => {
+      return {
+        id: sme.id,
+        name: sme.name,
+        entityType: sme.entityType,
+      };
+    });
   }
 }

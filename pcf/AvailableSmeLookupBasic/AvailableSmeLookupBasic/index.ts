@@ -1,6 +1,7 @@
 import { createAvailableSmeSelect } from "./components/CreateAvailableSmeSelect";
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 import { ResourceRequest } from "./types/ResourceRequest";
+import { SmeRequest } from "./types/SmeRequest";
 import { filterForAvailableSmeFetchBuilder } from "./utils/fetchBuilder";
 
 export class AvailableSmeLookupBasic
@@ -12,11 +13,16 @@ export class AvailableSmeLookupBasic
   private _selectedItem: ComponentFramework.LookupValue | undefined;
   private _availableSmes: ComponentFramework.LookupValue[];
   private _resourceRequest: ResourceRequest;
+  private _smeRequest: SmeRequest;
 
   private _entityType = "";
   private _resourceRequestId = "";
+  private _smeRequestId = "";
+  private _smeRequestStartDate = new Date();
+  private _smeRequestEndDate = new Date();
   private _publisherPrefix = "";
   private _shouldFilterSmes = false;
+  private _shouldShowOverlappingSmes = false;
 
   /**
    * Empty constructor.
@@ -48,6 +54,21 @@ export class AvailableSmeLookupBasic
     this._publisherPrefix = this._entityType.split("_")[0];
     this._selectedItem = this._context.parameters.assignedSmeLookup.raw[0];
     this._shouldFilterSmes = this._context.parameters.shouldFilterSmes.raw;
+    this._shouldShowOverlappingSmes =
+      this._context.parameters.showOverlappingSmes.raw;
+    this._smeRequestId = this._context.parameters.smeRequestId.raw || "";
+    this._smeRequestStartDate =
+      this._context.parameters.smeRequestStartDate.raw || new Date();
+    this._smeRequestEndDate =
+      this._context.parameters.smeRequestEndDate.raw || new Date();
+    this._smeRequest = new SmeRequest(
+      this._publisherPrefix,
+      this._smeRequestId,
+      "",
+      this._smeRequestStartDate,
+      this._smeRequestEndDate
+    );
+    console.debug("init smeRequest", this._smeRequest);
     console.debug("entityType", this._entityType);
     console.debug("publisherPrefix", this._publisherPrefix);
     console.debug("resourceRequestId", this._resourceRequestId);
@@ -109,10 +130,23 @@ export class AvailableSmeLookupBasic
         this._context.parameters.resourceRequestLookup.raw[0].id;
       this.Render();
     }
+    this._smeRequestStartDate =
+      this._context.parameters.smeRequestStartDate.raw || new Date();
+    this._smeRequestEndDate =
+      this._context.parameters.smeRequestEndDate.raw || new Date();
+    this._smeRequest = new SmeRequest(
+      this._publisherPrefix,
+      this._smeRequestId,
+      "",
+      this._smeRequestStartDate,
+      this._smeRequestEndDate
+    );
     const selectElement = this._container.querySelector("select");
     if (selectElement) {
       selectElement.value = this._selectedItem?.id || "";
     }
+
+    console.debug("updateView smeRequest", this._smeRequest);
   }
 
   /**

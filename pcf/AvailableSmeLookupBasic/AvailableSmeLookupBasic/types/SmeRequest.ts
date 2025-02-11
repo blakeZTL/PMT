@@ -22,9 +22,25 @@ export class SmeRequest {
     this.publisherPrefix = publisherPrefix;
     this.id = id;
     this.name = name || "";
-    this.startDate = startDate || new Date();
-    this.endDate = endDate || new Date();
+    this.startDate = this.convertToUTC(startDate);
+    this.endDate = this.convertToUTC(endDate);
     this.requestedSme = requestedSme || new AssignedSme();
     this.assignedSme = assignedSme || new AssignedSme();
+  }
+
+  private convertToUTC(date: Date | undefined): Date {
+    if (!date) {
+      return new Date();
+    }
+    return new Date(
+      Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds()
+      )
+    );
   }
 }

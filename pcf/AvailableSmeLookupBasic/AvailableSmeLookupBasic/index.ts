@@ -123,8 +123,9 @@ export class AvailableSmeLookupBasic
   ): Promise<void> {
     this._context = context;
     if (
+      this._context.parameters.resourceRequestLookup.raw.length > 0 &&
       this._resourceRequestId !==
-      this._context.parameters.resourceRequestLookup.raw[0].id
+        this._context.parameters.resourceRequestLookup.raw[0].id
     ) {
       this._resourceRequestId =
         this._context.parameters.resourceRequestLookup.raw[0].id;

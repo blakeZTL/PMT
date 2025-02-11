@@ -1,5 +1,6 @@
 import { createAvailableSmeSelect } from "./components/CreateAvailableSmeSelect";
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
+import { ResourceRequest } from "./types/ResourceRequest";
 import { filterForAvailableSmeFetchBuilder } from "./utils/fetchBuilder";
 
 export class AvailableSmeLookupBasic
@@ -10,6 +11,7 @@ export class AvailableSmeLookupBasic
   private _notifyOutputChanged: () => void;
   private _selectedItem: ComponentFramework.LookupValue | undefined;
   private _availableSmes: ComponentFramework.LookupValue[];
+  private _resourceRequest: ResourceRequest;
 
   private _entityType = "";
   private _resourceRequestId = "";
@@ -37,7 +39,7 @@ export class AvailableSmeLookupBasic
     _state: ComponentFramework.Dictionary,
     container: HTMLDivElement
   ): Promise<void> {
-    console.debug("AvailableSmeLookupBasic version 1.0.3");
+    console.debug("AvailableSmeLookupBasic version 1.0.5");
     this._container = container;
     this._context = context;
     this._notifyOutputChanged = notifyOutputChanged;
@@ -48,24 +50,60 @@ export class AvailableSmeLookupBasic
       this._context.parameters.resourceRequestLookup.raw[0].id;
     this._selectedItem = this._context.parameters.assignedSmeLookup.raw[0];
     this._shouldFilterSmes = this._context.parameters.shouldFilterSmes.raw;
+    this._resourceRequest = new ResourceRequest(
+      `${this._publisherPrefix}_resourcerequest`,
+      this._resourceRequestId,
+      this._context
+    );
+    await this._resourceRequest.init();
+    console.debug("resourceRequest", this._resourceRequest);
     console.debug("entityType", this._entityType);
     console.debug("publisherPrefix", this._publisherPrefix);
     console.debug("resourceRequestId", this._resourceRequestId);
     console.debug("selectedItem", this._selectedItem);
     console.debug("shouldFilterSmes", this._shouldFilterSmes);
+
+    // if (this._shouldFilterSmes) {
+    //   this._availableSmes =
+    //     this._resourceRequest.availableSmes.asLookupValues();
+    // } else {
+    //   await this.fetchAndSetData();
+    // }
     await this.fetchAndSetData();
     createAvailableSmeSelect(
       this._selectedItem,
       this._availableSmes,
       this._container,
+      this._shouldFilterSmes,
       this.onChange.bind(this)
     );
+    this.toggleWarningVisibility();
   }
 
   onChange(newValue: ComponentFramework.LookupValue | undefined): void {
     console.debug("onChange", newValue);
     this._selectedItem = newValue;
+    this.toggleWarningVisibility();
     this._notifyOutputChanged();
+  }
+
+  toggleWarningVisibility(): void {
+    const warningContainer = this._container.querySelector(
+      "#availableSmeWarningContainer"
+    ) as HTMLDivElement;
+    if (warningContainer) {
+      const selectedSmeIsAvailable = this._resourceRequest.availableSmes.some(
+        (sme) => sme.id === this._selectedItem?.id
+      );
+      if (this._selectedItem?.id && !selectedSmeIsAvailable) {
+        console.debug(
+          "Selected SME is not available for this Resource Request"
+        );
+        warningContainer.style.display = "block";
+      } else {
+        warningContainer.style.display = "none";
+      }
+    }
   }
 
   /**
@@ -106,7 +144,7 @@ export class AvailableSmeLookupBasic
           this._publisherPrefix,
           this._resourceRequestId
         );
-        console.debug("Filtering SMEs", fetchXml);
+        console.debug("Filtering SMEs");
         response = await this._context.webAPI.retrieveMultipleRecords(
           this._entityType,
           `?fetchXml=${encodeURIComponent(fetchXml)}`

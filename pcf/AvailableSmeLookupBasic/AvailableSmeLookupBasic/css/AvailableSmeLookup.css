@@ -1,0 +1,55 @@
+#availableSmeSelectElementsContainer{
+    display: flex;
+    outline: none;
+    background-color: rgb(245,245,245);
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: space-between;
+    flex-direction: row;
+    position: relative;
+}
+
+
+#availableSmeSelectContainer{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    outline: none;
+    padding-inline-start: 10px;
+    min-height: 32px;
+    width: 100%;
+}
+
+#availableSmeSelectControl{
+    /* color: rgb(112, 112, 112); */
+    color: black;
+    padding: 0 8 0 2;
+    border: 0px;
+    outline: none;
+    flex: auto;
+    background-color: transparent;
+    width: 100%;
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+#availableSmeSelectIconContainer{
+    display: flex;
+    outline: none;
+    padding-inline: 6px;
+    padding-top: 0px;
+    color: rgb(97, 97, 97);
+    border-radius: 4px;
+    height: auto;
+    border-width: 0px;
+    background-color: transparent;
+    cursor: pointer;
+    align-items: center;
+}
+
+#availableSmeSelectIconSpan{
+    width: 20px;
+    outline: none;
+}

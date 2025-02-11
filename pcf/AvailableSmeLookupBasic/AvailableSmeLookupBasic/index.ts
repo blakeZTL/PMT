@@ -1,6 +1,6 @@
 import { createAvailableSmeSelect } from "./components/CreateAvailableSmeSelect";
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
-import { filterForAvailableSmefetchBuilder } from "./utils/fetchBuilder";
+import { filterForAvailableSmeFetchBuilder } from "./utils/fetchBuilder";
 
 export class AvailableSmeLookupBasic
   implements ComponentFramework.StandardControl<IInputs, IOutputs>
@@ -102,7 +102,7 @@ export class AvailableSmeLookupBasic
     try {
       let response: ComponentFramework.WebApi.RetrieveMultipleResponse;
       if (this._shouldFilterSmes) {
-        const fetchXml = filterForAvailableSmefetchBuilder(
+        const fetchXml = filterForAvailableSmeFetchBuilder(
           this._publisherPrefix,
           this._resourceRequestId
         );

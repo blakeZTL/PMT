@@ -10,25 +10,6 @@ The `AvailableSmeLookupBasic` is a PowerApps Component Framework (PCF) control t
 - Displays the SMEs in a dropdown list.
 - Allows users to select an SME and notifies the framework of the change.
 
-## Installation
-
-1. Clone the repository to your local machine.
-2. Navigate to the `AvailableSmeLookupBasic` directory.
-3. Install the dependencies using npm:
-   ```sh
-   npm install
-   ```
-
-## Usage
-
-1. Build the PCF component:
-
-   ```sh
-   npm run build
-   ```
-
-2. Add the component to your model-driven app.
-
 ## Methods
 
 ### `init`

@@ -39,45 +39,32 @@ export class AvailableSmeLookupBasic
     _state: ComponentFramework.Dictionary,
     container: HTMLDivElement
   ): Promise<void> {
-    console.debug("AvailableSmeLookupBasic version 1.0.5");
+    console.debug("AvailableSmeLookupBasic version 1.0.7");
     this._container = container;
     this._context = context;
     this._notifyOutputChanged = notifyOutputChanged;
     this._entityType =
       this._context.parameters.assignedSmeLookup.getTargetEntityType?.();
     this._publisherPrefix = this._entityType.split("_")[0];
-    this._resourceRequestId =
-      this._context.parameters.resourceRequestLookup.raw[0].id;
     this._selectedItem = this._context.parameters.assignedSmeLookup.raw[0];
     this._shouldFilterSmes = this._context.parameters.shouldFilterSmes.raw;
-    this._resourceRequest = new ResourceRequest(
-      `${this._publisherPrefix}_resourcerequest`,
-      this._resourceRequestId,
-      this._context
-    );
-    await this._resourceRequest.init();
-    console.debug("resourceRequest", this._resourceRequest);
     console.debug("entityType", this._entityType);
     console.debug("publisherPrefix", this._publisherPrefix);
     console.debug("resourceRequestId", this._resourceRequestId);
     console.debug("selectedItem", this._selectedItem);
     console.debug("shouldFilterSmes", this._shouldFilterSmes);
-
-    // if (this._shouldFilterSmes) {
-    //   this._availableSmes =
-    //     this._resourceRequest.availableSmes.asLookupValues();
-    // } else {
-    //   await this.fetchAndSetData();
-    // }
-    await this.fetchAndSetData();
-    createAvailableSmeSelect(
-      this._selectedItem,
-      this._availableSmes,
-      this._container,
-      this._shouldFilterSmes,
-      this.onChange.bind(this)
-    );
-    this.toggleWarningVisibility();
+    if (this._context.parameters.resourceRequestLookup.raw.length === 0) {
+      console.debug("Resource Request Lookup is empty");
+      const noResourceRequestContainer = document.createElement("div");
+      noResourceRequestContainer.id = "noResourceRequestContainer";
+      noResourceRequestContainer.innerHTML = "No Resource Request Selected";
+      this._container.appendChild(noResourceRequestContainer);
+    } else {
+      this._resourceRequestId =
+        this._context.parameters.resourceRequestLookup.raw[0].id;
+      console.debug("resourceRequest", this._resourceRequest);
+      this.Render();
+    }
   }
 
   onChange(newValue: ComponentFramework.LookupValue | undefined): void {
@@ -110,8 +97,18 @@ export class AvailableSmeLookupBasic
    * Called when any value in the property bag has changed. This includes field values, data-sets, global values such as container height and width, offline status, control metadata values such as label, visible, etc.
    * @param context The entire property bag available to control via Context Object; It contains values as set up by the customizer mapped to names defined in the manifest, as well as utility functions
    */
-  public updateView(context: ComponentFramework.Context<IInputs>): void {
+  public async updateView(
+    context: ComponentFramework.Context<IInputs>
+  ): Promise<void> {
     this._context = context;
+    if (
+      this._resourceRequestId !==
+      this._context.parameters.resourceRequestLookup.raw[0].id
+    ) {
+      this._resourceRequestId =
+        this._context.parameters.resourceRequestLookup.raw[0].id;
+      this.Render();
+    }
     const selectElement = this._container.querySelector("select");
     if (selectElement) {
       selectElement.value = this._selectedItem?.id || "";
@@ -168,5 +165,30 @@ export class AvailableSmeLookupBasic
       console.error(error);
       this._availableSmes = [];
     }
+  }
+
+  async Render(): Promise<void> {
+    const noResourceRequestContainer = this._container.querySelector(
+      "#noResourceRequestContainer"
+    );
+    if (noResourceRequestContainer) {
+      noResourceRequestContainer.remove();
+    }
+
+    await this.fetchAndSetData();
+    this._resourceRequest = new ResourceRequest(
+      `${this._publisherPrefix}_resourcerequest`,
+      this._resourceRequestId,
+      this._context
+    );
+    await this._resourceRequest.init();
+    createAvailableSmeSelect(
+      this._selectedItem,
+      this._availableSmes,
+      this._container,
+      this._shouldFilterSmes,
+      this.onChange.bind(this)
+    );
+    this.toggleWarningVisibility();
   }
 }

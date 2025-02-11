@@ -1,5 +1,6 @@
 import { createAvailableSmeSelect } from "./components/CreateAvailableSmeSelect";
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
+import { filterForAvailableSmefetchBuilder } from "./utils/fetchBuilder";
 
 export class AvailableSmeLookupBasic
   implements ComponentFramework.StandardControl<IInputs, IOutputs>
@@ -7,9 +8,13 @@ export class AvailableSmeLookupBasic
   private _container: HTMLDivElement;
   private _context: ComponentFramework.Context<IInputs>;
   private _notifyOutputChanged: () => void;
-  private _entityType = "";
   private _selectedItem: ComponentFramework.LookupValue | undefined;
   private _availableSmes: ComponentFramework.LookupValue[];
+
+  private _entityType = "";
+  private _resourceRequestId = "";
+  private _publisherPrefix = "";
+  private _shouldFilterSmes = false;
 
   /**
    * Empty constructor.
@@ -29,21 +34,31 @@ export class AvailableSmeLookupBasic
   public async init(
     context: ComponentFramework.Context<IInputs>,
     notifyOutputChanged: () => void,
-    state: ComponentFramework.Dictionary,
+    _state: ComponentFramework.Dictionary,
     container: HTMLDivElement
   ): Promise<void> {
+    console.debug("AvailableSmeLookupBasic version 1.0.3");
     this._container = container;
     this._context = context;
     this._notifyOutputChanged = notifyOutputChanged;
     this._entityType =
       this._context.parameters.assignedSmeLookup.getTargetEntityType?.();
+    this._publisherPrefix = this._entityType.split("_")[0];
+    this._resourceRequestId =
+      this._context.parameters.resourceRequestLookup.raw[0].id;
     this._selectedItem = this._context.parameters.assignedSmeLookup.raw[0];
-    await this.fetchData();
+    this._shouldFilterSmes = this._context.parameters.shouldFilterSmes.raw;
+    console.debug("entityType", this._entityType);
+    console.debug("publisherPrefix", this._publisherPrefix);
+    console.debug("resourceRequestId", this._resourceRequestId);
+    console.debug("selectedItem", this._selectedItem);
+    console.debug("shouldFilterSmes", this._shouldFilterSmes);
+    await this.fetchAndSetData();
     createAvailableSmeSelect(
       this._selectedItem,
       this._availableSmes,
       this._container,
-      this.onChange.bind(this) // Bind the onChange method
+      this.onChange.bind(this)
     );
   }
 
@@ -83,22 +98,37 @@ export class AvailableSmeLookupBasic
     // Add code to cleanup control if necessary
   }
 
-  async fetchData(): Promise<void> {
+  async fetchAndSetData(): Promise<void> {
     try {
-      const response = await this._context.webAPI.retrieveMultipleRecords(
-        this._entityType
-      );
-      console.debug("fetchData entities: ", response.entities);
+      let response: ComponentFramework.WebApi.RetrieveMultipleResponse;
+      if (this._shouldFilterSmes) {
+        const fetchXml = filterForAvailableSmefetchBuilder(
+          this._publisherPrefix,
+          this._resourceRequestId
+        );
+        console.debug("Filtering SMEs", fetchXml);
+        response = await this._context.webAPI.retrieveMultipleRecords(
+          this._entityType,
+          `?fetchXml=${encodeURIComponent(fetchXml)}`
+        );
+      } else {
+        console.debug("Fetching all SMEs", this._entityType);
+        response = await this._context.webAPI.retrieveMultipleRecords(
+          this._entityType
+        );
+      }
+      console.debug("fetchAndSetData entities: ", response.entities);
       this._availableSmes = response.entities.map((entity) => {
         return {
-          id: entity["cra64_assignedsmeid"],
-          name: entity["cra64_name"],
+          id: entity[`${this._publisherPrefix}_assignedsmeid`],
+          name: entity[`${this._publisherPrefix}_name`],
           entityType: this._entityType,
         };
       });
       console.debug("this._availableSmes", this._availableSmes);
     } catch (error) {
       console.error(error);
+      this._availableSmes = [];
     }
   }
 }

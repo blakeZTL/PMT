@@ -9,10 +9,6 @@ export function createAvailableSmeSelect(
     return;
   }
 
-  const parentContainer = document.createElement("div");
-  parentContainer.role = "presentation";
-  parentContainer.className = "pa-b pa-iu flexbox";
-
   const elementContainer = document.createElement("div");
   elementContainer.role = "presentation";
   elementContainer.id = "availableSmeSelectElementsContainer";
@@ -52,7 +48,5 @@ export function createAvailableSmeSelect(
   selectContainer.appendChild(selectElement);
   elementContainer.appendChild(selectContainer);
 
-  parentContainer.appendChild(elementContainer);
-
-  container.appendChild(parentContainer);
+  container.appendChild(elementContainer);
 }

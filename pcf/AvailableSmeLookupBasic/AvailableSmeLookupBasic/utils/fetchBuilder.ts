@@ -23,6 +23,7 @@ export const filterForAvailableSmeFetchBuilder = (
             </entity>
         </fetch>
         `;
+  //console.debug("filterForAvailableSmeFetchBuilder", fetchXml);
   return fetchXml;
 };
 
@@ -32,7 +33,7 @@ export const fetchResourceRequestFetchBuilder = (
 ): string => {
   const fetchXml = `
         <fetch>
-            <entity name="${publisherPrefix}_resourcerequestid">
+            <entity name="${publisherPrefix}_resourcerequest">
             <attribute name="${publisherPrefix}_name" />
             <filter>
                 <condition 
@@ -53,5 +54,6 @@ export const fetchResourceRequestFetchBuilder = (
             </entity>
         </fetch>
         `;
+  //console.debug("fetchResourceRequestFetchBuilder", fetchXml);
   return fetchXml;
 };

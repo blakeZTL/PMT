@@ -61,6 +61,14 @@ The main file for the `AvailableSmeLookupBasic` PCF component.
 
 Contains the `createAvailableSmeSelect` function which creates the dropdown select element for available SMEs.
 
+### `css/AvailableSmeLookup.css`
+
+Contains the CSS styles for the `AvailableSmeLookupBasic` PCF component.
+
+### `ControlManifest.Input.xml`
+
+Defines the metadata for the `AvailableSmeLookupBasic` PCF component, including properties, resources, and feature usage.
+
 ## License
 
 This project is licensed under the MIT License.

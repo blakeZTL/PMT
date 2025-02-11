@@ -4,6 +4,11 @@ export function createAvailableSmeSelect(
   container: HTMLDivElement,
   onChange: (newValue: ComponentFramework.LookupValue | undefined) => void
 ): void {
+  if (!container) {
+    console.error("Container element is null or undefined.");
+    return;
+  }
+
   const parentContainer = document.createElement("div");
   parentContainer.role = "presentation";
   parentContainer.className = "pa-b pa-iu flexbox";
@@ -33,12 +38,14 @@ export function createAvailableSmeSelect(
   defaultOption.value = "";
   defaultOption.text = "---";
   selectElement.appendChild(defaultOption);
-  availableSmes?.forEach((element) => {
-    const option = document.createElement("option");
-    option.value = element.id;
-    option.text = element.name || "";
-    selectElement.appendChild(option);
-  });
+  if (availableSmes.length > 0) {
+    availableSmes?.forEach((element) => {
+      const option = document.createElement("option");
+      option.value = element.id;
+      option.text = element.name || "";
+      selectElement.appendChild(option);
+    });
+  }
 
   selectElement.value = selectedItem?.id || "";
 

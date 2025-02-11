@@ -1,4 +1,4 @@
-export const filterForAvailableSmefetchBuilder = (
+export const filterForAvailableSmeFetchBuilder = (
   publisherPrefix: string,
   resourceRequestId: string
 ): string => {
@@ -20,6 +20,36 @@ export const filterForAvailableSmefetchBuilder = (
                     />
                 </filter>            
             </link-entity>
+            </entity>
+        </fetch>
+        `;
+  return fetchXml;
+};
+
+export const fetchResourceRequestFetchBuilder = (
+  publisherPrefix: string,
+  resourceRequestId: string
+): string => {
+  const fetchXml = `
+        <fetch>
+            <entity name="${publisherPrefix}_resourcerequestid">
+            <attribute name="${publisherPrefix}_name" />
+            <filter>
+                <condition 
+                    attribute="${publisherPrefix}_resourcerequestid" 
+                    operator="eq"
+                    value="${resourceRequestId}" 
+                />
+            </filter>
+            <link-entity 
+                name="${publisherPrefix}_program"
+                from="${publisherPrefix}_programid"
+                to="${publisherPrefix}_program"
+                alias="program"
+            >
+                <attribute name="${publisherPrefix}_name" />
+                <attribute name="${publisherPrefix}_programid" />
+            </link-entity>        
             </entity>
         </fetch>
         `;

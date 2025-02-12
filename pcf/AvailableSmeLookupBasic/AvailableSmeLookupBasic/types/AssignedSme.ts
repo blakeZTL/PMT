@@ -9,13 +9,18 @@ export class AssignedSme {
   public name: string;
   public facility: Facility;
 
-  constructor() {
-    this.entityType = "";
-    this.id = "";
-    this.name = "";
+  constructor(
+    entityType?: string,
+    id?: string,
+    name?: string,
+    facility?: Facility
+  ) {
+    this.entityType = entityType || "";
+    this.id = id || "";
+    this.name = name || "";
     this.facility = {
-      id: "",
-      name: "",
+      id: facility?.id || "",
+      name: facility?.name || "",
     };
   }
 }

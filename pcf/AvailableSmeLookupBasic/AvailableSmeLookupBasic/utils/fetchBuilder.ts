@@ -146,6 +146,7 @@ export const fetchOverlappingSmeRequestsFetchBuilder = (
                 from="${smeRequest.publisherPrefix}_assignedsmeid"
                 to="${smeRequest.publisherPrefix}_requestedsme"
                 alias="requestedSme"
+                link-type="outer"
             >
                 <attribute name="${smeRequest.publisherPrefix}_assignedsmeid" />
                 <attribute name="${smeRequest.publisherPrefix}_name" />
@@ -170,6 +171,6 @@ export const fetchOverlappingSmeRequestsFetchBuilder = (
             </link-entity>
         </entity>
     </fetch>`;
-  console.debug("fetchOverlappingSmeRequestsFetchBuilder", fetchXml);
+  //console.debug("fetchOverlappingSmeRequestsFetchBuilder", fetchXml);
   return fetchXml;
 };

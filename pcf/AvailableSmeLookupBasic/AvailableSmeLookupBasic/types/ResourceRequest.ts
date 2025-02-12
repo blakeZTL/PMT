@@ -22,21 +22,24 @@ export class ResourceRequest {
   constructor(
     entityName: string,
     id: string,
-    context: ComponentFramework.Context<IInputs>
+    name?: string,
+    program?: Program
   ) {
     this.entityType = entityName;
     this.id = id;
-    this.name = "";
+    this.name = name || "";
     this.program = {
-      id: "",
-      name: "",
+      id: program?.id || "",
+      name: program?.name || "",
     };
     this.availableSmes = new AvailableSmeLookupValues();
-    this._context = context;
     this._publisherPrefix = this.entityType.split("_")[0];
   }
 
-  public async init(): Promise<void> {
+  public async init(
+    context: ComponentFramework.Context<IInputs>
+  ): Promise<void> {
+    this._context = context;
     console.debug("ResourceRequest.init");
     await this._fetchAndSetResourceRequest();
     await this._fetchAndSetAvailableSmes();

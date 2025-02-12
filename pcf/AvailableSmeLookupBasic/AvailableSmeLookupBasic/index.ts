@@ -14,12 +14,13 @@ export class AvailableSmeLookupBasic
   private _availableSmes: ComponentFramework.LookupValue[];
   private _resourceRequest: ResourceRequest;
   private _smeRequest: SmeRequest;
+  private _overlappingSmeRequests: SmeRequest[];
 
   private _entityType = "";
   private _resourceRequestId = "";
   private _smeRequestId = "";
-  private _smeRequestStartDate = new Date();
-  private _smeRequestEndDate = new Date();
+  private _smeRequestStartDate = "";
+  private _smeRequestEndDate = "";
   private _publisherPrefix = "";
   private _shouldFilterSmes = false;
   private _shouldShowOverlappingSmes = false;
@@ -45,7 +46,7 @@ export class AvailableSmeLookupBasic
     _state: ComponentFramework.Dictionary,
     container: HTMLDivElement
   ): Promise<void> {
-    console.debug("AvailableSmeLookupBasic version 1.0.7");
+    console.debug("AvailableSmeLookupBasic version 1.0.13");
     this._container = container;
     this._context = context;
     this._notifyOutputChanged = notifyOutputChanged;
@@ -58,13 +59,14 @@ export class AvailableSmeLookupBasic
       this._context.parameters.showOverlappingSmes.raw;
     this._smeRequestId = this._context.parameters.smeRequestId.raw || "";
     this._smeRequestStartDate =
-      this._context.parameters.smeRequestStartDate.raw || new Date();
+      this._context.parameters.smeRequestStartDate.raw?.toISOString() || "";
     this._smeRequestEndDate =
-      this._context.parameters.smeRequestEndDate.raw || new Date();
+      this._context.parameters.smeRequestEndDate.raw?.toISOString() || "";
     this._smeRequest = new SmeRequest(
       this._publisherPrefix,
       this._smeRequestId,
       "",
+      this._resourceRequest,
       this._smeRequestStartDate,
       this._smeRequestEndDate
     );
@@ -131,23 +133,30 @@ export class AvailableSmeLookupBasic
         this._context.parameters.resourceRequestLookup.raw[0].id;
       this.Render();
     }
-    this._smeRequestStartDate =
-      this._context.parameters.smeRequestStartDate.raw || new Date();
-    this._smeRequestEndDate =
-      this._context.parameters.smeRequestEndDate.raw || new Date();
+    this._smeRequestId = this._context.parameters.smeRequestId.raw || "";
     this._smeRequest = new SmeRequest(
       this._publisherPrefix,
       this._smeRequestId,
       "",
-      this._smeRequestStartDate,
-      this._smeRequestEndDate
+      this._resourceRequest,
+      this._context.parameters.smeRequestStartDate.raw?.toISOString() || "",
+      this._context.parameters.smeRequestEndDate.raw?.toISOString() || ""
     );
+    this._smeRequestStartDate = this._smeRequest.startDate;
+    this._smeRequestEndDate = this._smeRequest.endDate;
+    if (this._shouldShowOverlappingSmes) {
+      this._overlappingSmeRequests = await SmeRequest.getOverlappingSmeRequests(
+        this._smeRequest,
+        this._selectedItem,
+        this._context
+      );
+      console.debug("overlappingSmeRequests", this._overlappingSmeRequests);
+    }
+
     const selectElement = this._container.querySelector("select");
     if (selectElement) {
       selectElement.value = this._selectedItem?.id || "";
     }
-
-    console.debug("updateView smeRequest", this._smeRequest);
   }
 
   /**
@@ -213,10 +222,9 @@ export class AvailableSmeLookupBasic
     await this.fetchAndSetData();
     this._resourceRequest = new ResourceRequest(
       `${this._publisherPrefix}_resourcerequest`,
-      this._resourceRequestId,
-      this._context
+      this._resourceRequestId
     );
-    await this._resourceRequest.init();
+    await this._resourceRequest.init(this._context);
     createAvailableSmeSelect(
       this._selectedItem,
       this._availableSmes,

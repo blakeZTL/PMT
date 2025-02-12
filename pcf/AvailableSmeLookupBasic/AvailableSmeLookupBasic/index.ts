@@ -152,6 +152,8 @@ export class AvailableSmeLookupBasic
       );
       console.debug("overlappingSmeRequests", this._overlappingSmeRequests);
     }
+    // TODO: Refactor this to use a component
+    // TODO: Refactor to re-render on change
     const overlappingSmeWarningContainer = this._container.querySelector(
       "#overlappingSmeWarningContainer"
     );

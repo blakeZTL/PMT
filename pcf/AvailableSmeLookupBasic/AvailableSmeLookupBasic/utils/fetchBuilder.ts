@@ -67,38 +67,38 @@ export const fetchOverlappingSmeRequestsFetchBuilder = (
   const fetchXml = `<fetch>
         <entity name="${smeRequest.publisherPrefix}_smerequest">
             <attribute name="${smeRequest.publisherPrefix}_smerequestid" />
-            <attribute name="${smeRequest.publisherPrefix}_autoid" />
+            <attribute name="${smeRequest.publisherPrefix}_name" />
             <attribute name="${smeRequest.publisherPrefix}_startdate" />
             <attribute name="${smeRequest.publisherPrefix}_enddate" />
             <filter type="or">
                 <filter>                
                     <condition 
                         attribute="${smeRequest.publisherPrefix}_startdate"
-                        operator="ge"
-                        value="${smeRequest.startDate}"
-                    />
-                    <condition
-                        attribute="${smeRequest.publisherPrefix}_startdate"
                         operator="le"
-                        value="${smeRequest.endDate}"
-                    />
-                </filter>                
-                <filter>
-                    <condition
-                        attribute="${smeRequest.publisherPrefix}_enddate"
-                        operator="ge"
                         value="${smeRequest.startDate}"
                     />
                     <condition
                         attribute="${smeRequest.publisherPrefix}_enddate"
-                        operator="le"
-                        value="${smeRequest.endDate}"
+                        operator="ge"
+                        value="${smeRequest.startDate}"
                     />
                 </filter>                
                 <filter>
                     <condition
                         attribute="${smeRequest.publisherPrefix}_startdate"
                         operator="le"
+                        value="${smeRequest.endDate}"
+                    />
+                    <condition
+                        attribute="${smeRequest.publisherPrefix}_enddate"
+                        operator="ge"
+                        value="${smeRequest.endDate}"
+                    />
+                </filter>                
+                <filter>
+                    <condition
+                        attribute="${smeRequest.publisherPrefix}_startdate"
+                        operator="le"
                         value="${smeRequest.startDate}"
                     />
                     <condition
@@ -109,16 +109,16 @@ export const fetchOverlappingSmeRequestsFetchBuilder = (
                 </filter>                
                 <filter>
                     <condition
-                    attribute="${smeRequest.publisherPrefix}_startdate"
-                    operator="ge"
-                    value="${smeRequest.startDate}"
-                />
+                        attribute="${smeRequest.publisherPrefix}_startdate"
+                        operator="ge"
+                        value="${smeRequest.startDate}"
+                    />
                     <condition
                         attribute="${smeRequest.publisherPrefix}_enddate"
                         operator="le"
                         value="${smeRequest.endDate}"
                     />
-                </filter>                    
+                </filter>   
             </filter>
             <filter>
                 <condition
@@ -126,25 +126,50 @@ export const fetchOverlappingSmeRequestsFetchBuilder = (
                     operator="ne"
                     value="${smeRequest.id}"
                 />
+                <condition
+                    attribute="${smeRequest.publisherPrefix}_assignedsme"
+                    operator="eq"
+                    value="${selectedSme.id}"
+                />
             </filter>
             <link-entity
-                name="${smeRequest.publisherPrefix}_sme"
-                from="${smeRequest.publisherPrefix}_smeid"
-                to="${smeRequest.publisherPrefix}_requestedsme"
-                alias="sme"
+                name="${smeRequest.publisherPrefix}_assignedsme"
+                from="${smeRequest.publisherPrefix}_assignedsmeid"
+                to="${smeRequest.publisherPrefix}_assignedsme"
+                alias="assignedSme"
             >
-                    <attribute name="${smeRequest.publisherPrefix}_smeid" />
-                    <attribute name="${smeRequest.publisherPrefix}_email" />
+                <attribute name="${smeRequest.publisherPrefix}_assignedsmeid" />
+                <attribute name="${smeRequest.publisherPrefix}_name" />
+            </link-entity>
+            <link-entity
+                name="${smeRequest.publisherPrefix}_assignedsme"
+                from="${smeRequest.publisherPrefix}_assignedsmeid"
+                to="${smeRequest.publisherPrefix}_requestedsme"
+                alias="requestedSme"
+            >
+                <attribute name="${smeRequest.publisherPrefix}_assignedsmeid" />
+                <attribute name="${smeRequest.publisherPrefix}_name" />
+            </link-entity>
+            <link-entity
+                name="${smeRequest.publisherPrefix}_resourcerequest"
+                from="${smeRequest.publisherPrefix}_resourcerequestid"
+                to="${smeRequest.publisherPrefix}_resourcerequest"
+                alias="resourceRequest"
+            >
+                <attribute name="${smeRequest.publisherPrefix}_name" />
+                <attribute name="${smeRequest.publisherPrefix}_resourcerequestid" />  
+                <link-entity
+                    name="${smeRequest.publisherPrefix}_program"
+                    from="${smeRequest.publisherPrefix}_programid"
+                    to="${smeRequest.publisherPrefix}_program"
+                    alias="program"
+                >
                     <attribute name="${smeRequest.publisherPrefix}_name" />
-                <filter>
-                    <condition
-                        attribute="${smeRequest.publisherPrefix}_email"
-                        operator="eq"
-                        value="${selectedSme.id}"
-                    />
-                </filter>
+                    <attribute name="${smeRequest.publisherPrefix}_programid" />
+                </link-entity>
             </link-entity>
         </entity>
     </fetch>`;
+  console.debug("fetchOverlappingSmeRequestsFetchBuilder", fetchXml);
   return fetchXml;
 };

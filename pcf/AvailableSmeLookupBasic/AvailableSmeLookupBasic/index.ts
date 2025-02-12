@@ -46,7 +46,7 @@ export class AvailableSmeLookupBasic
     _state: ComponentFramework.Dictionary,
     container: HTMLDivElement
   ): Promise<void> {
-    console.debug("AvailableSmeLookupBasic version 1.0.13");
+    console.debug("AvailableSmeLookupBasic version 1.0.14");
     this._container = container;
     this._context = context;
     this._notifyOutputChanged = notifyOutputChanged;
@@ -151,6 +151,26 @@ export class AvailableSmeLookupBasic
         this._context
       );
       console.debug("overlappingSmeRequests", this._overlappingSmeRequests);
+    }
+    const overlappingSmeWarningContainer = this._container.querySelector(
+      "#overlappingSmeWarningContainer"
+    );
+    if (
+      this._overlappingSmeRequests.length > 0 &&
+      !overlappingSmeWarningContainer
+    ) {
+      const overlappingSmeWarningContainer = document.createElement("div");
+      overlappingSmeWarningContainer.id = "overlappingSmeWarningContainer";
+      overlappingSmeWarningContainer.innerHTML =
+        "Selected SME has overlapping requests";
+      this._container.appendChild(overlappingSmeWarningContainer);
+      const overlappingSmeList = document.createElement("ul");
+      overlappingSmeWarningContainer.appendChild(overlappingSmeList);
+      this._overlappingSmeRequests.forEach((request) => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = request.name;
+        overlappingSmeList.appendChild(listItem);
+      });
     }
 
     const selectElement = this._container.querySelector("select");

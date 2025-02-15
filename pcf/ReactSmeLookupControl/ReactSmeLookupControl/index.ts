@@ -84,6 +84,7 @@ export class ReactSmeLookupControl
         });
     }
 
+    //  TODO: Component needs a outer container to handle loading state
     if (this._isLoading) {
       return React.createElement("div", null, "Loading...");
     }

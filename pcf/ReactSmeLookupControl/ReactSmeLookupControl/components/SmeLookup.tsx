@@ -64,7 +64,12 @@ export const SmeLookup = (props: SmeLookupProps) => {
       .includes(query.toLowerCase())
   );
 
-  console.debug(selectedItem);
+  const onClear = () => {
+    setQuery("");
+    props.onInputChange(null);
+  };
+
+  console.debug("SmeLookup.selectedItem", selectedItem);
 
   return (
     <div className={styles.root} id={comboId}>

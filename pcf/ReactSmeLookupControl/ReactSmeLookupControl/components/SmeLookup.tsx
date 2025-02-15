@@ -12,6 +12,8 @@ import { AssignedSme } from "../types/AssignedSme";
 
 export interface SmeLookupProps extends ComboboxProps {
   assignedSmes: AssignedSme[];
+  selectedItem: ComponentFramework.LookupValue | null;
+  onInputChange: (sme: ComponentFramework.LookupValue | null) => void;
 }
 
 const useStyles = makeStyles({
@@ -26,13 +28,34 @@ const useStyles = makeStyles({
 });
 
 export const SmeLookup = (props: SmeLookupProps) => {
-  const { assignedSmes, ...comboboxProps } = props;
+  const { assignedSmes, selectedItem, ...comboboxProps } = props;
   const comboId = useId("reactSmeLookupCombobox");
   const styles = useStyles();
 
   const [query, setQuery] = React.useState<string>("");
+
+  React.useEffect(() => {
+    if (selectedItem) {
+      const selectedSme = assignedSmes.find(
+        (sme) => sme.id === selectedItem.id
+      );
+      if (selectedSme) {
+        setQuery(
+          `[${selectedSme.facility.facilityId}] ${selectedSme.fullName} (${selectedSme.email})`
+        );
+      }
+    }
+  }, [selectedItem, assignedSmes]);
+
   const onOptionSelect: ComboboxProps["onOptionSelect"] = (e, data) => {
     setQuery(data.optionText ?? "");
+    const selectedSme = assignedSmes.find((sme) => sme.id === data.optionValue);
+    const LookupValue = {
+      id: selectedSme?.id,
+      name: selectedSme?.email,
+      entityType: "pmt_assignedsme",
+    } as ComponentFramework.LookupValue;
+    props.onInputChange(LookupValue);
   };
 
   const filteredOptions = assignedSmes.filter((sme) =>

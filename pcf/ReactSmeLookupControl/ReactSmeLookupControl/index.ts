@@ -5,6 +5,7 @@ import * as React from "react";
 import { AssignedSme, IAssignedSmeApiResult } from "./types/AssignedSme";
 
 import { mockAssignedSmeData } from "./data/mockAssignedSme";
+import { AssignedSmeService } from "./services/AssignedSmeService";
 
 export class ReactSmeLookupControl
   implements ComponentFramework.ReactControl<IInputs, IOutputs>
@@ -14,6 +15,8 @@ export class ReactSmeLookupControl
 
   private _environment: string | null = "DEV";
   private _assignedSmes: AssignedSme[] = [];
+
+  private _selectedSme: ComponentFramework.LookupValue | null = null;
 
   /**
    * Empty constructor.
@@ -38,6 +41,7 @@ export class ReactSmeLookupControl
     this._context = context;
     this._environment =
       context.parameters.environment?.raw === "PROD" ? "PROD" : "DEV";
+    this._selectedSme = context.parameters.smeLookup?.raw[0] ?? null;
   }
 
   /**
@@ -53,16 +57,39 @@ export class ReactSmeLookupControl
       this._assignedSmes = mockAssignedSmeData.value.map((item) => {
         return AssignedSme.fromJson(item as IAssignedSmeApiResult);
       });
+    } else {
+      const assignedSmeService = new AssignedSmeService(this._context);
+      assignedSmeService
+        .getAssignedSmes()
+        .then((data) => {
+          this._assignedSmes = data;
+          return;
+        })
+        .catch((error) => {
+          console.error("Error fetching assigned smes: ", error);
+        });
     }
-    return React.createElement(SmeLookup, { assignedSmes: this._assignedSmes });
+    return React.createElement(SmeLookup, {
+      assignedSmes: this._assignedSmes,
+      selectedItem: this._selectedSme,
+      onInputChange: this.onInputChange,
+    });
   }
+
+  onInputChange = (newValue: ComponentFramework.LookupValue | null) => {
+    this._selectedSme = newValue;
+    this.notifyOutputChanged();
+    console.debug("Selected Sme: ", this._selectedSme);
+  };
 
   /**
    * It is called by the framework prior to a control receiving new data.
    * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as "bound" or "output"
    */
   public getOutputs(): IOutputs {
-    return {};
+    return {
+      smeLookup: this._selectedSme ? [this._selectedSme] : [],
+    };
   }
 
   /**

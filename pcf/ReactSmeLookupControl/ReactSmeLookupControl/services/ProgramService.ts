@@ -3,7 +3,7 @@ import { IProgramApiResult, Program } from "../types/Program";
 
 export class ProgramService {
   private _context: ComponentFramework.Context<IInputs>;
-  private _options = `$select=pmt_programid,pmt_name`;
+  private _options = `?$select=pmt_programid,pmt_name`;
 
   constructor(context: ComponentFramework.Context<IInputs>) {
     this._context = context;

@@ -3,7 +3,7 @@ import { ISmeRequestApiResult, SmeRequest } from "../types/SmeRequest";
 
 export class SmeRequestService {
   private _context: ComponentFramework.Context<IInputs>;
-  private _options = `$select=pmt_autoid,pmt_smerequestid&$expand=pmt_AssignedSME($select=pmt_assignedsmeid,pmt_email,pmt_fullname;$expand=pmt_Facility($select=pmt_facilityid,pmt_pmtfacilityid)),pmt_Request($select=pmt_autoid,pmt_resourcerequestid;$expand=pmt_Program($select=pmt_name,pmt_programid)),pmt_RequestedSME($select=pmt_assignedsmeid,pmt_email,pmt_fullname;$expand=pmt_Facility($select=pmt_facilityid,pmt_pmtfacilityid))`;
+  private _options = `?$select=pmt_autoid,pmt_smerequestid&$expand=pmt_AssignedSME($select=pmt_assignedsmeid,pmt_email,pmt_fullname;$expand=pmt_Facility($select=pmt_facilityid,pmt_pmtfacilityid)),pmt_Request($select=pmt_autoid,pmt_resourcerequestid;$expand=pmt_Program($select=pmt_name,pmt_programid)),pmt_RequestedSME($select=pmt_assignedsmeid,pmt_email,pmt_fullname;$expand=pmt_Facility($select=pmt_facilityid,pmt_pmtfacilityid))`;
 
   constructor(context: ComponentFramework.Context<IInputs>) {
     this._context = context;

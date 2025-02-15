@@ -3,7 +3,7 @@ import { ISmeHourApiResult, SmeHour } from "../types/SmeHour";
 
 export class SmeHourService {
   private _context: ComponentFramework.Context<IInputs>;
-  private _options = `$select=pmt_autoid,pmt_date,pmt_hours,pmt_smehourid&$expand=pmt_Request($select=pmt_autoid,pmt_smerequestid;$expand=pmt_Request($select=pmt_autoid,pmt_resourcerequestid;$expand=pmt_Program($select=pmt_name,pmt_programid)),pmt_AssignedSME($select=pmt_assignedsmeid,pmt_email,pmt_fullname;$expand=pmt_Facility($select=pmt_facilityid,pmt_pmtfacilityid)),pmt_RequestedSME($select=pmt_assignedsmeid,pmt_email,pmt_fullname;$expand=pmt_Facility($select=pmt_facilityid,pmt_pmtfacilityid)))`;
+  private _options = `?$select=pmt_autoid,pmt_date,pmt_hours,pmt_smehourid&$expand=pmt_Request($select=pmt_autoid,pmt_smerequestid;$expand=pmt_Request($select=pmt_autoid,pmt_resourcerequestid;$expand=pmt_Program($select=pmt_name,pmt_programid)),pmt_AssignedSME($select=pmt_assignedsmeid,pmt_email,pmt_fullname;$expand=pmt_Facility($select=pmt_facilityid,pmt_pmtfacilityid)),pmt_RequestedSME($select=pmt_assignedsmeid,pmt_email,pmt_fullname;$expand=pmt_Facility($select=pmt_facilityid,pmt_pmtfacilityid)))`;
 
   constructor(context: ComponentFramework.Context<IInputs>) {
     this._context = context;

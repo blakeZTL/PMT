@@ -64,6 +64,8 @@ export const SmeLookup = (props: SmeLookupProps) => {
       .includes(query.toLowerCase())
   );
 
+  console.debug(selectedItem);
+
   return (
     <div className={styles.root} id={comboId}>
       <Combobox
@@ -72,6 +74,9 @@ export const SmeLookup = (props: SmeLookupProps) => {
         clearable
         onOptionSelect={onOptionSelect}
         onChange={(ev) => setQuery(ev.target.value)}
+        defaultSelectedOptions={
+          selectedItem?.id ? [selectedItem.id] : undefined
+        }
         value={query}
       >
         {filteredOptions.map((sme) => (

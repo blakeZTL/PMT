@@ -57,6 +57,11 @@ export class ReactSmeLookupControl
       this._assignedSmes = mockAssignedSmeData.value.map((item) => {
         return AssignedSme.fromJson(item as IAssignedSmeApiResult);
       });
+      this._selectedSme = {
+        id: this._assignedSmes[0].id,
+        name: this._assignedSmes[0].email,
+        entityType: "pmt_assignedsme",
+      };
     } else {
       const assignedSmeService = new AssignedSmeService(this._context);
       assignedSmeService

@@ -1,4 +1,8 @@
 import { createAvailableSmeSelect } from "./components/CreateAvailableSmeSelect";
+import {
+  fluentOverlappingSmes,
+  OverlappingSmes,
+} from "./components/OverlappingSmes";
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 import { ResourceRequest } from "./types/ResourceRequest";
 import { SmeRequest } from "./types/SmeRequest";
@@ -152,7 +156,6 @@ export class AvailableSmeLookupBasic
       );
       console.debug("overlappingSmeRequests", this._overlappingSmeRequests);
     }
-    // TODO: Refactor this to use a component
     // TODO: Refactor to re-render on change
     const overlappingSmeWarningContainer = this._container.querySelector(
       "#overlappingSmeWarningContainer"
@@ -161,18 +164,14 @@ export class AvailableSmeLookupBasic
       this._overlappingSmeRequests.length > 0 &&
       !overlappingSmeWarningContainer
     ) {
-      const overlappingSmeWarningContainer = document.createElement("div");
-      overlappingSmeWarningContainer.id = "overlappingSmeWarningContainer";
-      overlappingSmeWarningContainer.innerHTML =
-        "Selected SME has overlapping requests";
+      const overlappingSmeWarningContainer = OverlappingSmes(
+        this._overlappingSmeRequests
+      );
       this._container.appendChild(overlappingSmeWarningContainer);
-      const overlappingSmeList = document.createElement("ul");
-      overlappingSmeWarningContainer.appendChild(overlappingSmeList);
-      this._overlappingSmeRequests.forEach((request) => {
-        const listItem = document.createElement("li");
-        listItem.innerHTML = request.name;
-        overlappingSmeList.appendChild(listItem);
-      });
+      // const fluentOverlappingSmeGrid = document.createElement("div");
+      // fluentOverlappingSmeGrid.id = "fluentOverlappingSmeGrid";
+      // this._container.appendChild(fluentOverlappingSmeGrid);
+      // fluentOverlappingSmes(this._overlappingSmeRequests);
     }
 
     const selectElement = this._container.querySelector("select");

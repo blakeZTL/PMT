@@ -1,5 +1,3 @@
-import { ResourceRequest } from "../types/ResourceRequest";
-
 export function createAvailableSmeSelect(
   selectedItem: ComponentFramework.LookupValue | undefined,
   availableSmes: ComponentFramework.LookupValue[],

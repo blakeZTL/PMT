@@ -1,0 +1,38 @@
+<fetch>
+  <entity name="pmt_smehour">
+    <attribute name="pmt_autoid" />
+    <attribute name="pmt_date" />
+    <attribute name="pmt_hours" />
+    <attribute name="pmt_smehourid" />
+    <link-entity name="pmt_smerequest" from="pmt_smerequestid" to="pmt_request" link-type="outer" alias="sme">
+      <attribute name="pmt_autoid" />
+      <attribute name="pmt_smerequestid" />
+      <link-entity name="pmt_resourcerequest" from="pmt_resourcerequestid" to="pmt_request" link-type="outer" alias="rr">
+        <attribute name="pmt_autoid" />
+        <attribute name="pmt_resourcerequestid" />
+        <link-entity name="pmt_program" from="pmt_programid" to="pmt_program" link-type="outer" alias="program">
+          <attribute name="pmt_name" />
+          <attribute name="pmt_programid" />
+        </link-entity>
+      </link-entity>
+      <link-entity name="pmt_assignedsme" from="pmt_assignedsmeid" to="pmt_assignedsme" link-type="outer" alias="as">
+        <attribute name="pmt_assignedsmeid" />
+        <attribute name="pmt_email" />
+        <attribute name="pmt_fullname" />
+        <link-entity name="pmt_pmtfacility" from="pmt_pmtfacilityid" to="pmt_facility" alias="asFacility">
+          <attribute name="pmt_facilityid" />
+          <attribute name="pmt_pmtfacilityid" />
+        </link-entity>
+      </link-entity>
+      <link-entity name="pmt_assignedsme" from="pmt_assignedsmeid" to="pmt_requestedsme" link-type="outer" alias="rs">
+        <attribute name="pmt_assignedsmeid" />
+        <attribute name="pmt_email" />
+        <attribute name="pmt_fullname" />
+        <link-entity name="pmt_pmtfacility" from="pmt_pmtfacilityid" to="pmt_facility" link-type="outer" alias="rsFacility">
+          <attribute name="pmt_facilityid" />
+          <attribute name="pmt_pmtfacilityid" />
+        </link-entity>
+      </link-entity>
+    </link-entity>
+  </entity>
+</fetch>

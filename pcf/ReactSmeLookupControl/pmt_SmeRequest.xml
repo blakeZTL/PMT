@@ -2,28 +2,28 @@
   <entity name="pmt_smerequest">
     <attribute name="pmt_autoid" />
     <attribute name="pmt_smerequestid" />
-    <link-entity name="pmt_assignedsme" from="pmt_assignedsmeid" to="pmt_assignedsme" link-type="inner" alias="assignedSme">
+    <link-entity name="pmt_assignedsme" from="pmt_assignedsmeid" to="pmt_assignedsme" link-type="outer" alias="assignedSme">
       <attribute name="pmt_assignedsmeid" />
       <attribute name="pmt_email" />
       <attribute name="pmt_fullname" />
-      <link-entity name="pmt_pmtfacility" from="pmt_pmtfacilityid" to="pmt_facility" link-type="inner" alias="asFacility">
+      <link-entity name="pmt_pmtfacility" from="pmt_pmtfacilityid" to="pmt_facility" link-type="outer" alias="asFacility">
         <attribute name="pmt_facilityid" />
         <attribute name="pmt_pmtfacilityid" />
       </link-entity>
     </link-entity>
-    <link-entity name="pmt_resourcerequest" from="pmt_resourcerequestid" to="pmt_request" link-type="inner" alias="resourceRequest">
+    <link-entity name="pmt_resourcerequest" from="pmt_resourcerequestid" to="pmt_request" link-type="outer" alias="resourceRequest">
       <attribute name="pmt_autoid" />
       <attribute name="pmt_resourcerequestid" />
-      <link-entity name="pmt_program" from="pmt_programid" to="pmt_program" alias="program">
+      <link-entity name="pmt_program" from="pmt_programid" to="pmt_program" link-type="outer" alias="program">
         <attribute name="pmt_name" />
         <attribute name="pmt_programid" />
       </link-entity>
     </link-entity>
-    <link-entity name="pmt_assignedsme" from="pmt_assignedsmeid" to="pmt_requestedsme" alias="requestedSme">
+    <link-entity name="pmt_assignedsme" from="pmt_assignedsmeid" to="pmt_requestedsme" link-type="outer" alias="requestedSme">
       <attribute name="pmt_assignedsmeid" />
       <attribute name="pmt_email" />
       <attribute name="pmt_fullname" />
-      <link-entity name="pmt_pmtfacility" from="pmt_pmtfacilityid" to="pmt_facility" link-type="inner" alias="rsFacility">
+      <link-entity name="pmt_pmtfacility" from="pmt_pmtfacilityid" to="pmt_facility" link-type="outer" alias="rsFacility">
         <attribute name="pmt_facilityid" />
         <attribute name="pmt_pmtfacilityid" />
       </link-entity>

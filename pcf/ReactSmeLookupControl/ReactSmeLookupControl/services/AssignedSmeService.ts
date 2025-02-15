@@ -10,6 +10,7 @@ export class AssignedSmeService {
   }
 
   public async getAssignedSmes(): Promise<AssignedSme[]> {
+    console.debug("AssignedSmeService.getAssignedSmes");
     const assignedSmes = await this._context.webAPI.retrieveMultipleRecords(
       "pmt_assignedsme",
       this._options

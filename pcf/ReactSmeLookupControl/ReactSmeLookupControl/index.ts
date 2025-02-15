@@ -17,6 +17,7 @@ export class ReactSmeLookupControl
   private _assignedSmes: AssignedSme[] = [];
 
   private _selectedSme: ComponentFramework.LookupValue | null = null;
+  private _isLoading = false;
 
   /**
    * Empty constructor.
@@ -42,6 +43,7 @@ export class ReactSmeLookupControl
     this._environment =
       context.parameters.environment?.raw === "PROD" ? "PROD" : "DEV";
     this._selectedSme = context.parameters.smeLookup?.raw[0] ?? null;
+    this._isLoading = true;
   }
 
   /**
@@ -57,23 +59,35 @@ export class ReactSmeLookupControl
       this._assignedSmes = mockAssignedSmeData.value.map((item) => {
         return AssignedSme.fromJson(item as IAssignedSmeApiResult);
       });
-      this._selectedSme = {
-        id: this._assignedSmes[0].id,
-        name: this._assignedSmes[0].email,
-        entityType: "pmt_assignedsme",
-      };
+      if (this._isLoading) {
+        this._selectedSme = {
+          id: this._assignedSmes[0].id,
+          name: this._assignedSmes[0].email,
+          entityType: "pmt_assignedsme",
+        };
+      }
+      this._isLoading = false;
     } else {
       const assignedSmeService = new AssignedSmeService(this._context);
       assignedSmeService
         .getAssignedSmes()
         .then((data) => {
           this._assignedSmes = data;
+          this._isLoading = false;
+          this.notifyOutputChanged();
           return;
         })
         .catch((error) => {
           console.error("Error fetching assigned smes: ", error);
+          this._isLoading = false;
+          this.notifyOutputChanged();
         });
     }
+
+    if (this._isLoading) {
+      return React.createElement("div", null, "Loading...");
+    }
+
     return React.createElement(SmeLookup, {
       assignedSmes: this._assignedSmes,
       selectedItem: this._selectedSme,
@@ -83,8 +97,8 @@ export class ReactSmeLookupControl
 
   onInputChange = (newValue: ComponentFramework.LookupValue | null) => {
     this._selectedSme = newValue;
+    console.debug("onInputChange: ", this._selectedSme);
     this.notifyOutputChanged();
-    console.debug("Selected Sme: ", this._selectedSme);
   };
 
   /**

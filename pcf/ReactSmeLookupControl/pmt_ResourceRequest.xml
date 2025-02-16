@@ -1,0 +1,15 @@
+<fetch>
+  <entity name="pmt_resourcerequest">
+    <attribute name="pmt_autoid" />
+    <attribute name="pmt_resourcerequestid" />
+    <link-entity name="pmt_program" from="pmt_programid" to="pmt_program" link-type="outer" alias="program">
+      <attribute name="pmt_name" />
+      <attribute name="pmt_programid" />
+    </link-entity>
+    <link-entity name="pmt_resourcerequest_pmt_assignedsme" from="pmt_resourcerequestid" to="pmt_resourcerequestid" link-type="outer" intersect="true">
+      <link-entity name="pmt_assignedsme" from="pmt_assignedsmeid" to="pmt_assignedsmeid" link-type="outer" alias="assignedSme" intersect="true">
+        <attribute name="pmt_assignedsmeid" />
+      </link-entity>
+    </link-entity>
+  </entity>
+</fetch>

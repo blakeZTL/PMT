@@ -1,0 +1,11 @@
+<fetch>
+  <entity name="pmt_assignedsme">
+    <attribute name="pmt_assignedsmeid" />
+    <attribute name="pmt_email" />
+    <attribute name="pmt_fullname" />
+    <link-entity name="pmt_pmtfacility" from="pmt_pmtfacilityid" to="pmt_facility" link-type="outer" alias="facility">
+      <attribute name="pmt_facilityid" />
+      <attribute name="pmt_pmtfacilityid" />
+    </link-entity>
+  </entity>
+</fetch>

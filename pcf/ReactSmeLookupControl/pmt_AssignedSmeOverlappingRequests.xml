@@ -1,0 +1,27 @@
+<fetch>
+  <entity name="pmt_assignedsme">
+    <attribute name="pmt_assignedsmeid" />
+    <attribute name="pmt_email" />
+    <attribute name="pmt_fullname" />
+    <filter>
+      <condition attribute="pmt_assignedsmeid" operator="eq" value="8c1586df-d6eb-ef11-be20-7c1e5248a34a" uiname="blake@blake.com" uitype="pmt_assignedsme" />
+    </filter>
+    <link-entity name="pmt_pmtfacility" from="pmt_pmtfacilityid" to="pmt_facility" link-type="outer" alias="facility">
+      <attribute name="pmt_facilityid" />
+      <attribute name="pmt_pmtfacilityid" />
+    </link-entity>
+    <link-entity name="pmt_smerequest" from="pmt_assignedsme" to="pmt_assignedsmeid" link-type="outer" alias="smeRequest">
+      <attribute name="pmt_autoid" />
+      <attribute name="pmt_smerequestid" />
+      <filter>
+        <condition attribute="pmt_smerequestid" operator="ne" value="0675013b-e3eb-ef11-be20-7c1e5248a34a" uiname="1000" uitype="pmt_smerequest" />
+      </filter>
+      <link-entity name="pmt_smehour" from="pmt_request" to="pmt_smerequestid" link-type="outer" alias="smehour">
+        <attribute name="pmt_autoid" />
+        <attribute name="pmt_date" />
+        <attribute name="pmt_hours" />
+        <attribute name="pmt_smehourid" />
+      </link-entity>
+    </link-entity>
+  </entity>
+</fetch>

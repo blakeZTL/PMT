@@ -23,11 +23,13 @@ const useStyles = makeStyles({
     justifyItems: "start",
     gap: "2px",
     backgroundColor: "rgb(245,245,245)",
+    width: "100%",
   },
   optionDiv: {
     marginLeft: "10px",
     marginTop: "5px",
     marginBottom: "5px",
+    marginRight: "10px",
     backgroundColor: "white",
   },
   optionName: {
@@ -60,6 +62,9 @@ const useStyles = makeStyles({
     paddingRight: "5px",
     cursor: "pointer",
   },
+  expandIcon: {
+    width: "20px",
+  },
 });
 
 export const SmeLookup = (props: SmeLookupProps) => {
@@ -69,6 +74,8 @@ export const SmeLookup = (props: SmeLookupProps) => {
 
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState<string>("");
+  const [openSearch, setOpenSearch] = React.useState(false);
+  const comboboxRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (selectedItem) {
@@ -83,7 +90,14 @@ export const SmeLookup = (props: SmeLookupProps) => {
     }
   }, [selectedItem, assignedSmes]);
 
+  React.useEffect(() => {
+    if (comboboxRef.current) {
+      comboboxRef.current.focus();
+    }
+  }, [value]);
+
   const onOptionSelect: ComboboxProps["onOptionSelect"] = (e, data) => {
+    setOpenSearch(false);
     setQuery("");
     setValue(data.optionText ?? "");
     const selectedSme = assignedSmes.find((sme) => sme.id === data.optionValue);
@@ -114,7 +128,7 @@ export const SmeLookup = (props: SmeLookupProps) => {
       {value ? (
         <div className={styles.card}>
           <div className={styles.cardText} onClick={onClear}>
-            {value} X{" "}
+            {value} <span className="symbolFont Cancel-symbol"></span>
           </div>
         </div>
       ) : (
@@ -132,6 +146,16 @@ export const SmeLookup = (props: SmeLookupProps) => {
           }
           value={value ? value : query}
           className={styles.combobox}
+          expandIcon={
+            <span
+              className={`symbolFont SearchButton-symbol ${styles.expandIcon}`}
+              onSelect={() => setOpenSearch(!openSearch)}
+            ></span>
+          }
+          onFocus={() => setOpenSearch(true)}
+          onBlur={() => setOpenSearch(false)}
+          open={openSearch}
+          ref={comboboxRef}
         >
           {filteredOptions.map((sme) => (
             <Option

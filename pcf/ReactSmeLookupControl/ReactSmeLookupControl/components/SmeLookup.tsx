@@ -22,11 +22,7 @@ export interface SmeLookupProps extends ComboboxProps {
 
 const useStyles = makeStyles({
   root: {
-    display: "grid",
-    gridTemplateRows: "repeat(1fr)",
-    justifyItems: "start",
-    gap: "2px",
-    backgroundColor: "rgb(245,245,245)",
+    backgroundColor: "transparent",
     width: "100%",
   },
   optionDiv: {
@@ -51,8 +47,12 @@ const useStyles = makeStyles({
     fontSize: "12px",
   },
   combobox: {
+    display: "grid",
+    gridTemplateRows: "repeat(1fr)",
+    justifyItems: "start",
+    gap: "2px",
+    backgroundColor: "rgb(245,245,245)",
     width: "100%",
-    paddingLeft: "10px",
   },
   card: {
     display: "flex",
@@ -74,6 +74,7 @@ const useStyles = makeStyles({
   },
   expandIcon: {
     width: "20px",
+    fontSize: "14px",
   },
   warningMessage: {
     color: "red",
@@ -81,6 +82,9 @@ const useStyles = makeStyles({
     fontStyle: "italic",
     marginLeft: "10px",
     display: "flex",
+  },
+  input: {
+    width: "100%",
   },
 });
 
@@ -176,8 +180,8 @@ export const SmeLookup = (props: SmeLookupProps) => {
 
   console.debug("SmeLookup.selectedItem", selectedItem);
   return (
-    <div>
-      <div className={styles.root} id={comboId}>
+    <div className={styles.root}>
+      <div className={styles.combobox} id={comboId}>
         {value ? (
           <div className={styles.card}>
             <div className={styles.cardText} onClick={onClear}>
@@ -207,6 +211,9 @@ export const SmeLookup = (props: SmeLookupProps) => {
             }
             listbox={{
               className: styles.listboxDiv,
+            }}
+            input={{
+              className: styles.input,
             }}
           >
             {
@@ -241,7 +248,7 @@ export const SmeLookup = (props: SmeLookupProps) => {
           </Combobox>
         )}
       </div>
-      {!validSme && (
+      {!validSme && value && (
         <div className={styles.warningMessage}>
           *Selected SME not associated with the Resource Request
         </div>

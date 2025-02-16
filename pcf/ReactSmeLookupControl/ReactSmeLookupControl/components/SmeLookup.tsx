@@ -178,7 +178,7 @@ export const SmeLookup = (props: SmeLookupProps) => {
     props.onInputChange(undefined);
   };
 
-  console.debug("SmeLookup.selectedItem", selectedItem);
+  console.debug("SmeLookup.assignedSmes", assignedSmes);
   return (
     <div className={styles.root}>
       <div className={styles.combobox} id={comboId}>

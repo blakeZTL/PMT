@@ -43,13 +43,6 @@ export const Container = (props: IContainerProps) => {
         .getAssignedSmes()
         .then((data) => {
           setAssignedSmes(data);
-          if (selectedItem === null && data.length > 0) {
-            setSelectedSme({
-              id: data[0].id,
-              name: data[0].email,
-              entityType: "pmt_assignedsme",
-            });
-          }
           setIsLoading(false);
           return;
         })
@@ -63,15 +56,17 @@ export const Container = (props: IContainerProps) => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
+  // TODO: try removing inline styles
   return (
-    <SmeLookup
-      assignedSmes={assignedSmes}
-      selectedItem={selectedSme}
-      onInputChange={(sme) => {
-        setSelectedSme(sme);
-        onInputChange(sme);
-      }}
-    />
+    <div style={{ width: "100%" }}>
+      <SmeLookup
+        assignedSmes={assignedSmes}
+        selectedItem={selectedSme}
+        onInputChange={(sme) => {
+          setSelectedSme(sme);
+          onInputChange(sme);
+        }}
+      />
+    </div>
   );
 };

@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     gridTemplateRows: "repeat(1fr)",
     justifyItems: "start",
     gap: "2px",
-    maxWidth: "400px",
+    backgroundColor: "rgb(245,245,245)",
   },
 });
 
@@ -65,25 +65,30 @@ export const SmeLookup = (props: SmeLookupProps) => {
   );
 
   console.debug("SmeLookup.selectedItem", selectedItem);
-
+  //TODO: Style Options
+  //TODO: Style Selected Option
+  //TODO: OnSelect should clear the query but keep the selected item
   return (
     <div className={styles.root} id={comboId}>
       <Combobox
         {...comboboxProps}
         placeholder="---"
         clearable
+        appearance="underline"
         onOptionSelect={onOptionSelect}
         onChange={(ev) => setQuery(ev.target.value)}
         defaultSelectedOptions={
           selectedItem?.id ? [selectedItem.id] : undefined
         }
         value={query}
+        style={{ width: "100%" }}
       >
         {filteredOptions.map((sme) => (
           <Option
             key={sme.id}
             value={sme.id}
             text={`[${sme.facility.facilityId}] ${sme.fullName} (${sme.email})`}
+            style={{ backgroundColor: "white" }}
           >
             <div>
               <div>{`${sme.fullName} (${sme.email})`}</div>

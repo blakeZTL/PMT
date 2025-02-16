@@ -57,6 +57,9 @@ export class ReactSmeLookupControl
   }
 
   onInputChange = (newValue: ComponentFramework.LookupValue | null) => {
+    if (!newValue?.id) {
+      newValue = null;
+    }
     this._selectedSme = newValue;
     console.debug("onInputChange: ", this._selectedSme);
     this.notifyOutputChanged();

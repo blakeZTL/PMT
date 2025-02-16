@@ -9,6 +9,32 @@ export const mockAssignedSmeData = {
         pmt_pmtfacilityid: "007624c6-d6eb-ef11-be20-7c1e5248a34a",
         pmt_facilityid: "ZTL",
       },
+      pmt_smerequest_AssignedSME_pmt_assignedsme: [
+        {
+          pmt_autoid: "1000",
+          pmt_smerequestid: "0675013b-e3eb-ef11-be20-7c1e5248a34a",
+          pmt_smehour_Request_pmt_smerequest: [
+            {
+              pmt_date: "2025-02-17T00:00:00Z",
+              pmt_autoid: "1000",
+              pmt_smehourid: "c44f5e61-e3eb-ef11-be20-7c1e5248a34a",
+              pmt_hours: 8.0,
+            },
+          ],
+        },
+        {
+          pmt_autoid: "1001",
+          pmt_smerequestid: "8b10b067-e6eb-ef11-be20-7c1e5248a34a",
+          pmt_smehour_Request_pmt_smerequest: [
+            {
+              pmt_date: "2025-02-17T00:00:00Z",
+              pmt_autoid: "1001",
+              pmt_smehourid: "ad9d6345-ebeb-ef11-be20-7c1e5248a34a",
+              pmt_hours: 8.0,
+            },
+          ],
+        },
+      ],
     },
     {
       "@odata.etag": 'W/"2386161"',
@@ -19,6 +45,7 @@ export const mockAssignedSmeData = {
         pmt_pmtfacilityid: "007624c6-d6eb-ef11-be20-7c1e5248a34a",
         pmt_facilityid: "ZTL",
       },
+      pmt_smerequest_AssignedSME_pmt_assignedsme: [],
     },
     {
       "@odata.etag": 'W/"2481618"',
@@ -29,6 +56,7 @@ export const mockAssignedSmeData = {
         pmt_pmtfacilityid: "007624c6-d6eb-ef11-be20-7c1e5248a34a",
         pmt_facilityid: "ZTL",
       },
+      pmt_smerequest_AssignedSME_pmt_assignedsme: [],
     },
     {
       "@odata.etag": 'W/"2481635"',
@@ -39,6 +67,7 @@ export const mockAssignedSmeData = {
         pmt_pmtfacilityid: "007624c6-d6eb-ef11-be20-7c1e5248a34a",
         pmt_facilityid: "ZTL",
       },
+      pmt_smerequest_AssignedSME_pmt_assignedsme: [],
     },
     {
       "@odata.etag": 'W/"2484381"',
@@ -49,6 +78,7 @@ export const mockAssignedSmeData = {
         pmt_pmtfacilityid: "b14af9ba-98ec-ef11-be20-7c1e5267196e",
         pmt_facilityid: "ZHU",
       },
+      pmt_smerequest_AssignedSME_pmt_assignedsme: [],
     },
     {
       "@odata.etag": 'W/"2484317"',
@@ -59,6 +89,7 @@ export const mockAssignedSmeData = {
         pmt_pmtfacilityid: "b14af9ba-98ec-ef11-be20-7c1e5267196e",
         pmt_facilityid: "ZHU",
       },
+      pmt_smerequest_AssignedSME_pmt_assignedsme: [],
     },
   ],
 };

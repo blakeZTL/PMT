@@ -161,32 +161,35 @@ export const SmeLookup = (props: SmeLookupProps) => {
             className: styles.listboxDiv,
           }}
         >
-          {groupOptions.map((group) => (
-            <OptionGroup key={group} label={group}>
-              {filteredOptions.map((sme) => {
-                if (sme.facility.facilityId !== group) {
-                  return null;
-                }
-                return (
-                  <Option
-                    key={sme.id}
-                    value={sme.id}
-                    text={`[${sme.facility.facilityId}] ${sme.fullName} (${sme.email})`}
-                    className={styles.optionDiv}
-                  >
-                    <div>
-                      <div
-                        className={styles.optionName}
-                      >{`${sme.fullName} (${sme.email})`}</div>
-                      <div
-                        className={styles.optionFacility}
-                      >{`${sme.facility.facilityId}`}</div>
-                    </div>
-                  </Option>
-                );
-              })}
-            </OptionGroup>
-          ))}
+          {
+            // TODO: Style the option groups
+            groupOptions.map((group) => (
+              <OptionGroup key={group} label={group}>
+                {filteredOptions.map((sme) => {
+                  if (sme.facility.facilityId !== group) {
+                    return null;
+                  }
+                  return (
+                    <Option
+                      key={sme.id}
+                      value={sme.id}
+                      text={`[${sme.facility.facilityId}] ${sme.fullName} (${sme.email})`}
+                      className={styles.optionDiv}
+                    >
+                      <div>
+                        <div
+                          className={styles.optionName}
+                        >{`${sme.fullName} (${sme.email})`}</div>
+                        <div
+                          className={styles.optionFacility}
+                        >{`${sme.facility.facilityId}`}</div>
+                      </div>
+                    </Option>
+                  );
+                })}
+              </OptionGroup>
+            ))
+          }
         </Combobox>
       )}
     </div>

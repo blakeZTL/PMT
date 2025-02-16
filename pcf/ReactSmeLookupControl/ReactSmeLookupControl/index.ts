@@ -1,6 +1,7 @@
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 import * as React from "react";
 import { Container } from "./components/Container";
+import { ControlProps } from "./types/ControlProps";
 
 export class ReactSmeLookupControl
   implements ComponentFramework.ReactControl<IInputs, IOutputs>
@@ -8,9 +9,12 @@ export class ReactSmeLookupControl
   private notifyOutputChanged: () => void;
   private _context: ComponentFramework.Context<IInputs>;
 
-  private _environment: string | null = "DEV";
-
-  private _selectedSme: ComponentFramework.LookupValue | null = null;
+  private _environment: string | undefined = "DEV";
+  private _resourceRequest: ComponentFramework.LookupValue | undefined;
+  private _selectedSme: ComponentFramework.LookupValue | undefined;
+  private _smeRequestId: string | undefined;
+  private _restrictToResourceRequest = false;
+  private _controlProps: ControlProps;
 
   /**
    * Empty constructor.
@@ -35,7 +39,21 @@ export class ReactSmeLookupControl
     this._context = context;
     this._environment =
       context.parameters.environment?.raw === "PROD" ? "PROD" : "DEV";
-    this._selectedSme = context.parameters.smeLookup?.raw[0] ?? null;
+    this._selectedSme = context.parameters.smeLookup?.raw[0] ?? undefined;
+    this._resourceRequest =
+      context.parameters.resourceRequestLookup?.raw[0] ?? undefined;
+    this._smeRequestId = context.parameters.smeRequestId?.raw ?? undefined;
+    this._restrictToResourceRequest =
+      context.parameters.restrictToResourceRequest?.raw;
+
+    this._controlProps = new ControlProps(
+      context,
+      notifyOutputChanged,
+      this._environment,
+      this._selectedSme,
+      this._resourceRequest,
+      this._smeRequestId
+    );
   }
 
   /**
@@ -47,23 +65,34 @@ export class ReactSmeLookupControl
     context: ComponentFramework.Context<IInputs>
   ): React.ReactElement {
     this._context = context;
+    this._environment =
+      context.parameters.environment?.raw === "PROD" ? "PROD" : "DEV";
+    this._selectedSme = context.parameters.smeLookup?.raw[0] ?? undefined;
+    this._resourceRequest =
+      context.parameters.resourceRequestLookup?.raw[0] ?? undefined;
+    this._smeRequestId = context.parameters.smeRequestId?.raw ?? undefined;
+    this._restrictToResourceRequest =
+      context.parameters.restrictToResourceRequest?.raw;
 
-    this.onInputChange(context.parameters.smeLookup?.raw[0] ?? null);
+    this._controlProps.context = this._context;
+    this._controlProps.selectedItem = this._selectedSme;
+    this._controlProps.resourceRequest = this._resourceRequest;
+    this._controlProps.smeRequestId = this._smeRequestId;
+    this._controlProps.restrictToResourceRequest =
+      this._restrictToResourceRequest;
+    console.debug("UpdateView.ControlProps: ", this._controlProps);
 
     return React.createElement(Container, {
-      context: this._context,
-      environment: this._environment ?? "DEV",
-      selectedItem: this._selectedSme,
+      controlProps: this._controlProps,
       onInputChange: this.onInputChange.bind(this),
     });
   }
 
-  onInputChange = (newValue: ComponentFramework.LookupValue | null) => {
+  onInputChange = (newValue: ComponentFramework.LookupValue | undefined) => {
     if (!newValue?.id) {
-      newValue = null;
+      newValue = undefined;
     }
     this._selectedSme = newValue;
-    console.debug("onInputChange: ", this._selectedSme);
     this.notifyOutputChanged();
   };
 

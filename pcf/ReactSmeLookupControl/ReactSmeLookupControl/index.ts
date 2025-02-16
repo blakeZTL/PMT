@@ -48,11 +48,13 @@ export class ReactSmeLookupControl
   ): React.ReactElement {
     this._context = context;
 
+    this.onInputChange(context.parameters.smeLookup?.raw[0] ?? null);
+
     return React.createElement(Container, {
       context: this._context,
       environment: this._environment ?? "DEV",
       selectedItem: this._selectedSme,
-      onInputChange: this.onInputChange,
+      onInputChange: this.onInputChange.bind(this),
     });
   }
 

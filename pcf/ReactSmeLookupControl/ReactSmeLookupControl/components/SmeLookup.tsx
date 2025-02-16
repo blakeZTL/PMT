@@ -4,6 +4,7 @@ import {
   Combobox,
   makeStyles,
   Option,
+  OptionGroup,
   useId,
 } from "@fluentui/react-components";
 import type { ComboboxProps } from "@fluentui/react-components";
@@ -82,6 +83,9 @@ export const SmeLookup = (props: SmeLookupProps) => {
   const [value, setValue] = React.useState<string>("");
   const [openSearch, setOpenSearch] = React.useState(false);
 
+  const groups = assignedSmes.map((sme) => sme.facility.facilityId);
+  const groupOptions = [...new Set(groups)].sort();
+
   React.useEffect(() => {
     if (selectedItem) {
       const selectedSme = assignedSmes.find(
@@ -108,12 +112,14 @@ export const SmeLookup = (props: SmeLookupProps) => {
     props.onInputChange(lookupValue);
   };
 
-  const filteredOptions = assignedSmes.filter(
-    (sme) =>
-      `${sme.fullName} ${sme.email} ${sme.facility.facilityId}`
-        .toLowerCase()
-        .includes(query.toLowerCase()) && sme.id !== selectedItem?.id
-  );
+  const filteredOptions = assignedSmes
+    .filter(
+      (sme) =>
+        `${sme.fullName} ${sme.email} ${sme.facility.facilityId}`
+          .toLowerCase()
+          .includes(query.toLowerCase()) && sme.id !== selectedItem?.id
+    )
+    .sort((a, b) => a.fullName.localeCompare(b.fullName));
 
   const onClear = () => {
     setQuery("");
@@ -155,22 +161,31 @@ export const SmeLookup = (props: SmeLookupProps) => {
             className: styles.listboxDiv,
           }}
         >
-          {filteredOptions.map((sme) => (
-            <Option
-              key={sme.id}
-              value={sme.id}
-              text={`[${sme.facility.facilityId}] ${sme.fullName} (${sme.email})`}
-              className={styles.optionDiv}
-            >
-              <div>
-                <div
-                  className={styles.optionName}
-                >{`${sme.fullName} (${sme.email})`}</div>
-                <div
-                  className={styles.optionFacility}
-                >{`${sme.facility.facilityId}`}</div>
-              </div>
-            </Option>
+          {groupOptions.map((group) => (
+            <OptionGroup key={group} label={group}>
+              {filteredOptions.map((sme) => {
+                if (sme.facility.facilityId !== group) {
+                  return null;
+                }
+                return (
+                  <Option
+                    key={sme.id}
+                    value={sme.id}
+                    text={`[${sme.facility.facilityId}] ${sme.fullName} (${sme.email})`}
+                    className={styles.optionDiv}
+                  >
+                    <div>
+                      <div
+                        className={styles.optionName}
+                      >{`${sme.fullName} (${sme.email})`}</div>
+                      <div
+                        className={styles.optionFacility}
+                      >{`${sme.facility.facilityId}`}</div>
+                    </div>
+                  </Option>
+                );
+              })}
+            </OptionGroup>
           ))}
         </Combobox>
       )}

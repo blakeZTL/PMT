@@ -26,10 +26,16 @@ const useStyles = makeStyles({
     width: "100%",
   },
   optionDiv: {
-    marginLeft: "10px",
+    marginLeft: "3px",
     marginTop: "5px",
     marginBottom: "5px",
-    marginRight: "10px",
+    marginRight: "3px",
+    backgroundColor: "white",
+    "&:hover": {
+      backgroundColor: "rgb(245,245,245)",
+    },
+  },
+  listboxDiv: {
     backgroundColor: "white",
   },
   optionName: {
@@ -75,7 +81,6 @@ export const SmeLookup = (props: SmeLookupProps) => {
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState<string>("");
   const [openSearch, setOpenSearch] = React.useState(false);
-  const comboboxRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (selectedItem) {
@@ -89,12 +94,6 @@ export const SmeLookup = (props: SmeLookupProps) => {
       }
     }
   }, [selectedItem, assignedSmes]);
-
-  React.useEffect(() => {
-    if (comboboxRef.current) {
-      comboboxRef.current.focus();
-    }
-  }, [value]);
 
   const onOptionSelect: ComboboxProps["onOptionSelect"] = (e, data) => {
     setOpenSearch(false);
@@ -152,10 +151,9 @@ export const SmeLookup = (props: SmeLookupProps) => {
               onSelect={() => setOpenSearch(!openSearch)}
             ></span>
           }
-          onFocus={() => setOpenSearch(true)}
-          onBlur={() => setOpenSearch(false)}
-          open={openSearch}
-          ref={comboboxRef}
+          listbox={{
+            className: styles.listboxDiv,
+          }}
         >
           {filteredOptions.map((sme) => (
             <Option

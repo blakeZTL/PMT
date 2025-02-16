@@ -56,9 +56,8 @@ export const Container = (props: IContainerProps) => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  // TODO: try removing inline styles
   return (
-    <div style={{ width: "100%" }}>
+    <div>
       <SmeLookup
         assignedSmes={assignedSmes}
         selectedItem={selectedSme}

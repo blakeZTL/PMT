@@ -57,15 +57,13 @@ export const Container = (props: IContainerProps) => {
     return <div>Loading...</div>;
   }
   return (
-    <div>
-      <SmeLookup
-        assignedSmes={assignedSmes}
-        selectedItem={selectedSme}
-        onInputChange={(sme) => {
-          setSelectedSme(sme);
-          onInputChange(sme);
-        }}
-      />
-    </div>
+    <SmeLookup
+      assignedSmes={assignedSmes}
+      selectedItem={selectedSme}
+      onInputChange={(sme) => {
+        setSelectedSme(sme);
+        onInputChange(sme);
+      }}
+    />
   );
 };

@@ -6,7 +6,7 @@ import {
 
 export class ResourceRequestService {
   private _context: ComponentFramework.Context<IInputs>;
-  private _options = `?$select=pmt_resourcerequestid,pmt_autoid$expand=pmt_Program($select=pmt_programid,pmt_name)`;
+  private _options = `?$select=pmt_autoid,pmt_resourcerequestid&$expand=pmt_Program($select=pmt_name,pmt_programid),pmt_ResourceRequest_pmt_AssignedSME_pmt_AssignedSME($select=pmt_assignedsmeid)`;
 
   constructor(context: ComponentFramework.Context<IInputs>) {
     this._context = context;

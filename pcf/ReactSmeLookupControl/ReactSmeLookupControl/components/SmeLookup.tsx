@@ -96,6 +96,8 @@ export const SmeLookup = (props: SmeLookupProps) => {
           `[${selectedSme.facility.facilityId}] ${selectedSme.fullName} (${selectedSme.email})`
         );
       }
+    } else {
+      setValue("");
     }
   }, [selectedItem, assignedSmes]);
 

@@ -50,12 +50,12 @@ export const SmeLookup = (props: SmeLookupProps) => {
   const onOptionSelect: ComboboxProps["onOptionSelect"] = (e, data) => {
     setQuery(data.optionText ?? "");
     const selectedSme = assignedSmes.find((sme) => sme.id === data.optionValue);
-    const LookupValue = {
+    const lookupValue = {
       id: selectedSme?.id,
       name: selectedSme?.email,
       entityType: "pmt_assignedsme",
     } as ComponentFramework.LookupValue;
-    props.onInputChange(LookupValue);
+    props.onInputChange(lookupValue);
   };
 
   const filteredOptions = assignedSmes.filter((sme) =>
@@ -63,11 +63,6 @@ export const SmeLookup = (props: SmeLookupProps) => {
       .toLowerCase()
       .includes(query.toLowerCase())
   );
-
-  const onClear = () => {
-    setQuery("");
-    props.onInputChange(null);
-  };
 
   console.debug("SmeLookup.selectedItem", selectedItem);
 

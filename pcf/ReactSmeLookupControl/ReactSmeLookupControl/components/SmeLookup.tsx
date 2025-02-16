@@ -18,12 +18,47 @@ export interface SmeLookupProps extends ComboboxProps {
 
 const useStyles = makeStyles({
   root: {
-    // Stack the label above the field with a gap
     display: "grid",
     gridTemplateRows: "repeat(1fr)",
     justifyItems: "start",
     gap: "2px",
     backgroundColor: "rgb(245,245,245)",
+  },
+  optionDiv: {
+    marginLeft: "10px",
+    marginTop: "5px",
+    marginBottom: "5px",
+    backgroundColor: "white",
+  },
+  optionName: {
+    fontWeight: "bold",
+    fontSize: "16px",
+  },
+  optionFacility: {
+    color: "gray",
+    fontSize: "12px",
+  },
+  combobox: {
+    width: "100%",
+    paddingLeft: "10px",
+  },
+  card: {
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: "#ebf3fc",
+    marginTop: "5px",
+    marginBottom: "5px",
+    marginLeft: "10px",
+    borderRadius: "5px",
+  },
+  cardText: {
+    color: "#0f6cbd",
+    textDecoration: "underline",
+    paddingTop: "3px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingRight: "5px",
+    cursor: "pointer",
   },
 });
 
@@ -33,6 +68,7 @@ export const SmeLookup = (props: SmeLookupProps) => {
   const styles = useStyles();
 
   const [query, setQuery] = React.useState<string>("");
+  const [value, setValue] = React.useState<string>("");
 
   React.useEffect(() => {
     if (selectedItem) {
@@ -40,7 +76,7 @@ export const SmeLookup = (props: SmeLookupProps) => {
         (sme) => sme.id === selectedItem.id
       );
       if (selectedSme) {
-        setQuery(
+        setValue(
           `[${selectedSme.facility.facilityId}] ${selectedSme.fullName} (${selectedSme.email})`
         );
       }
@@ -48,7 +84,8 @@ export const SmeLookup = (props: SmeLookupProps) => {
   }, [selectedItem, assignedSmes]);
 
   const onOptionSelect: ComboboxProps["onOptionSelect"] = (e, data) => {
-    setQuery(data.optionText ?? "");
+    setQuery("");
+    setValue(data.optionText ?? "");
     const selectedSme = assignedSmes.find((sme) => sme.id === data.optionValue);
     const lookupValue = {
       id: selectedSme?.id,
@@ -58,45 +95,63 @@ export const SmeLookup = (props: SmeLookupProps) => {
     props.onInputChange(lookupValue);
   };
 
-  const filteredOptions = assignedSmes.filter((sme) =>
-    `${sme.fullName} ${sme.email} ${sme.facility.facilityId}`
-      .toLowerCase()
-      .includes(query.toLowerCase())
+  const filteredOptions = assignedSmes.filter(
+    (sme) =>
+      `${sme.fullName} ${sme.email} ${sme.facility.facilityId}`
+        .toLowerCase()
+        .includes(query.toLowerCase()) && sme.id !== selectedItem?.id
   );
 
+  const onClear = () => {
+    setQuery("");
+    setValue("");
+    props.onInputChange(null);
+  };
+
   console.debug("SmeLookup.selectedItem", selectedItem);
-  //TODO: Style Options
-  //TODO: Style Selected Option
-  //TODO: OnSelect should clear the query but keep the selected item
   return (
     <div className={styles.root} id={comboId}>
-      <Combobox
-        {...comboboxProps}
-        placeholder="---"
-        clearable
-        appearance="underline"
-        onOptionSelect={onOptionSelect}
-        onChange={(ev) => setQuery(ev.target.value)}
-        defaultSelectedOptions={
-          selectedItem?.id ? [selectedItem.id] : undefined
-        }
-        value={query}
-        style={{ width: "100%" }}
-      >
-        {filteredOptions.map((sme) => (
-          <Option
-            key={sme.id}
-            value={sme.id}
-            text={`[${sme.facility.facilityId}] ${sme.fullName} (${sme.email})`}
-            style={{ backgroundColor: "white" }}
-          >
-            <div>
-              <div>{`${sme.fullName} (${sme.email})`}</div>
-              <div>{`${sme.facility.facilityId}`}</div>
-            </div>
-          </Option>
-        ))}
-      </Combobox>
+      {value ? (
+        <div className={styles.card}>
+          <div className={styles.cardText} onClick={onClear}>
+            {value} X{" "}
+          </div>
+        </div>
+      ) : (
+        <Combobox
+          {...comboboxProps}
+          placeholder="---"
+          clearable
+          appearance="underline"
+          onOptionSelect={onOptionSelect}
+          onChange={(ev) => {
+            setQuery(ev.target.value);
+          }}
+          defaultSelectedOptions={
+            selectedItem?.id ? [selectedItem.id] : undefined
+          }
+          value={value ? value : query}
+          className={styles.combobox}
+        >
+          {filteredOptions.map((sme) => (
+            <Option
+              key={sme.id}
+              value={sme.id}
+              text={`[${sme.facility.facilityId}] ${sme.fullName} (${sme.email})`}
+              className={styles.optionDiv}
+            >
+              <div>
+                <div
+                  className={styles.optionName}
+                >{`${sme.fullName} (${sme.email})`}</div>
+                <div
+                  className={styles.optionFacility}
+                >{`${sme.facility.facilityId}`}</div>
+              </div>
+            </Option>
+          ))}
+        </Combobox>
+      )}
     </div>
   );
 };

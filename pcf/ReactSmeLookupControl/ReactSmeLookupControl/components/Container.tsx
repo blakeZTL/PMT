@@ -19,6 +19,7 @@ export const Container = (props: IContainerProps) => {
   const [assignedSmes, setAssignedSmes] = React.useState<AssignedSme[]>([]);
   const [selectedSme, setSelectedSme] =
     React.useState<ComponentFramework.LookupValue | null>(selectedItem ?? null);
+  console.debug("Container.SelectedSme: ", selectedSme);
 
   React.useEffect(() => {
     if (environment === "DEV") {
@@ -28,7 +29,7 @@ export const Container = (props: IContainerProps) => {
       });
       setAssignedSmes(smes);
 
-      if (!selectedItem?.id && smes.length > 0 && isLoading) {
+      if (!selectedSme?.id && smes.length > 0 && isLoading) {
         console.debug("Setting selectedSme: ", smes[0]);
         setSelectedSme({
           id: smes[0].id,
@@ -50,6 +51,7 @@ export const Container = (props: IContainerProps) => {
           console.error("Error fetching assigned smes: ", error);
           setIsLoading(false);
         });
+      setSelectedSme(selectedItem);
     }
   }, [selectedItem, environment, context]);
 

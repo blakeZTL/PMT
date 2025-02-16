@@ -1,11 +1,6 @@
-import { SmeLookup } from "./components/SmeLookup";
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 import * as React from "react";
-
-import { AssignedSme, IAssignedSmeApiResult } from "./types/AssignedSme";
-
-import { mockAssignedSmeData } from "./data/mockAssignedSme";
-import { AssignedSmeService } from "./services/AssignedSmeService";
+import { Container } from "./components/Container";
 
 export class ReactSmeLookupControl
   implements ComponentFramework.ReactControl<IInputs, IOutputs>
@@ -14,10 +9,8 @@ export class ReactSmeLookupControl
   private _context: ComponentFramework.Context<IInputs>;
 
   private _environment: string | null = "DEV";
-  private _assignedSmes: AssignedSme[] = [];
 
   private _selectedSme: ComponentFramework.LookupValue | null = null;
-  private _isLoading = false;
 
   /**
    * Empty constructor.
@@ -43,7 +36,6 @@ export class ReactSmeLookupControl
     this._environment =
       context.parameters.environment?.raw === "PROD" ? "PROD" : "DEV";
     this._selectedSme = context.parameters.smeLookup?.raw[0] ?? null;
-    this._isLoading = true;
   }
 
   /**
@@ -55,42 +47,10 @@ export class ReactSmeLookupControl
     context: ComponentFramework.Context<IInputs>
   ): React.ReactElement {
     this._context = context;
-    if (this._environment === "DEV") {
-      this._assignedSmes = mockAssignedSmeData.value.map((item) => {
-        return AssignedSme.fromJson(item as IAssignedSmeApiResult);
-      });
-      if (this._isLoading) {
-        this._selectedSme = {
-          id: this._assignedSmes[0].id,
-          name: this._assignedSmes[0].email,
-          entityType: "pmt_assignedsme",
-        };
-      }
-      this._isLoading = false;
-    } else {
-      const assignedSmeService = new AssignedSmeService(this._context);
-      assignedSmeService
-        .getAssignedSmes()
-        .then((data) => {
-          this._assignedSmes = data;
-          this._isLoading = false;
-          this.notifyOutputChanged();
-          return;
-        })
-        .catch((error) => {
-          console.error("Error fetching assigned smes: ", error);
-          this._isLoading = false;
-          this.notifyOutputChanged();
-        });
-    }
 
-    //  TODO: Component needs a outer container to handle loading state
-    if (this._isLoading) {
-      return React.createElement("div", null, "Loading...");
-    }
-
-    return React.createElement(SmeLookup, {
-      assignedSmes: this._assignedSmes,
+    return React.createElement(Container, {
+      context: this._context,
+      environment: this._environment ?? "DEV",
       selectedItem: this._selectedSme,
       onInputChange: this.onInputChange,
     });

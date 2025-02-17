@@ -1,10 +1,19 @@
 import * as React from "react";
-import { makeStyles } from "@fluentui/react-components";
+import { makeStyles, mergeClasses } from "@fluentui/react-components";
 import { AssignedSme } from "../types/AssignedSme";
 import { ISmeRequestApiResult, SmeRequest } from "../types/SmeRequest";
 import { ControlProps } from "../types/ControlProps";
 import { SmeRequestService } from "../services/SmeRequestService";
 import { mockSmeRequest } from "../data/mockSmeRequest";
+
+import {
+  TableBody,
+  TableCell,
+  TableRow,
+  Table,
+  TableHeader,
+  TableHeaderCell,
+} from "@fluentui/react-components";
 
 export interface IOverlappingRequestsProps {
   assignedSme: AssignedSme;
@@ -16,10 +25,49 @@ export interface IOverlappingSmeRequest {
   date: string;
   hours: number;
 }
-export const useStyles = makeStyles({
+const useStyles = makeStyles({
   root: {
     backgroundColor: "transparent",
     width: "100%",
+    padding: "10px",
+    marginTop: "10px",
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+  },
+  headerCell: {
+    backgroundColor: "#f3f2f1",
+    fontWeight: "bold",
+    padding: "10px",
+    borderBottom: "2px solid #e1dfdd",
+    paddingLeft: "10px",
+  },
+  bodyCell: {
+    textAlign: "left",
+    paddingLeft: "10px",
+    borderBottom: "1px solid #e1dfdd",
+  },
+  row: {
+    "&:nth-child(even)": {
+      backgroundColor: "#faf9f8",
+    },
+  },
+  autoId: {
+    color: "#0f6cbd",
+    cursor: "pointer",
+  },
+  tableTitle: {
+    fontSize: "14px",
+    fontWeight: "semibold",
+    marginBottom: "3px",
+  },
+  tableSubTitle: {
+    fontSize: "10px",
+    marginBottom: "10px",
+    color: "#6d6c6b",
+    paddingLeft: "10px",
+    paddingRight: "10px",
   },
 });
 
@@ -33,6 +81,41 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
   console.debug("OverlappingRequests.assignedSme: ", assignedSme);
   console.debug("OverlappingRequests.smeRequestId: ", smeRequestId);
   const styles = useStyles();
+
+  const columns = [
+    {
+      key: "smeRequest",
+      name: "SME Request",
+      fieldName: "smeRequest",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+    {
+      key: "program",
+      name: "Program Name",
+      fieldName: "program",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+    {
+      key: "date",
+      name: "Date",
+      fieldName: "date",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+    {
+      key: "hours",
+      name: "Hours",
+      fieldName: "hours",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+  ];
 
   const [overlappingRequests, setOverlappingRequests] = React.useState<
     IOverlappingSmeRequest[]
@@ -113,25 +196,70 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
     "OverlappingRequests.overlappingRequests: ",
     overlappingRequests
   );
+
+  const goToSmeRequest = (smeRequestId: string) => {
+    console.debug("OverlappingRequests.goToSmeRequest: ", smeRequestId);
+    context.navigation
+      .openForm({
+        entityName: "pmt_smerequest",
+        entityId: smeRequestId,
+        openInNewWindow: true,
+      })
+      .then((success) => {
+        return;
+      })
+      .catch((error) => {
+        console.error("Error opening form: ", error);
+      });
+  };
+
   return overlappingRequests.length > 0 ? (
     <div className={styles.root}>
-      <h3>Overlapping Requests</h3>
-      {overlappingRequests.length > 0 ? (
-        <ul>
+      <div className={styles.tableTitle}>Overlapping Requests</div>
+      <div className={styles.tableSubTitle}>
+        There are overlapping SME requests for the selected SME. Detailed below
+        is a link to the SME Request along with the associated Program Name,
+        Date and amount of Hours alloted for the day.
+      </div>
+      <Table
+        arial-label="Overlapping Requests"
+        size="small"
+        className={styles.table}
+      >
+        <TableHeader>
+          <TableRow>
+            {columns.map((column) => (
+              <TableHeaderCell key={column.key} className={styles.headerCell}>
+                {column.name}
+              </TableHeaderCell>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {overlappingRequests.map((request) => {
             return (
-              <li key={request.smeRequest.id}>
-                {request.smeRequest.autoId}
-                {request.smeRequest.request?.program.name}
-                {request.date}
-                {request.hours}
-              </li>
+              <TableRow key={request.smeRequest.id} className={styles.row}>
+                <TableCell
+                  className={mergeClasses(styles.bodyCell, styles.autoId)}
+                  onClick={() => goToSmeRequest(request.smeRequest.id)}
+                  style={{ textDecoration: "underline" }}
+                >
+                  {request.smeRequest.autoId}
+                </TableCell>
+                <TableCell className={styles.bodyCell}>
+                  {request.smeRequest.request?.program.name}
+                </TableCell>
+                <TableCell className={styles.bodyCell}>
+                  {new Date(request.date).toISOString().split("T")[0]}
+                </TableCell>
+                <TableCell className={styles.bodyCell}>
+                  {request.hours}
+                </TableCell>
+              </TableRow>
             );
           })}
-        </ul>
-      ) : (
-        <p>No overlapping requests</p>
-      )}
+        </TableBody>
+      </Table>
     </div>
   ) : null;
 };

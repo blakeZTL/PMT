@@ -191,7 +191,11 @@ export const SmeLookup = (props: SmeLookupProps) => {
       <div className={styles.combobox} id={comboId}>
         {value ? (
           <div className={styles.card}>
-            <div className={styles.cardText} onClick={onClear}>
+            <div
+              className={styles.cardText}
+              onClick={onClear}
+              style={{ textDecoration: "underline" }}
+            >
               {value} <span className="symbolFont Cancel-symbol"></span>
             </div>
           </div>
@@ -260,17 +264,18 @@ export const SmeLookup = (props: SmeLookupProps) => {
           *Selected SME not associated with the Resource Request
         </div>
       )}
-
-      <div>
-        <OverlappingRequests
-          assignedSme={
-            assignedSmes.find((sme) => sme.id === selectedItem?.id) ??
-            new AssignedSme()
-          }
-          smeRequestId={smeRequestId}
-          controlProps={controlProps}
-        />
-      </div>
+      {value && (
+        <div>
+          <OverlappingRequests
+            assignedSme={
+              assignedSmes.find((sme) => sme.id === selectedItem?.id) ??
+              new AssignedSme()
+            }
+            smeRequestId={smeRequestId}
+            controlProps={controlProps}
+          />
+        </div>
+      )}
     </div>
   );
 };

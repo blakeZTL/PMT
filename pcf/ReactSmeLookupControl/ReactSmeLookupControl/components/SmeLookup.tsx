@@ -11,10 +11,14 @@ import type { ComboboxProps } from "@fluentui/react-components";
 
 import { AssignedSme } from "../types/AssignedSme";
 import { ResourceRequest } from "../types/ResourceRequest";
+import { OverlappingRequests } from "./OverlappingRequests";
+import { ControlProps } from "../types/ControlProps";
 
 export interface SmeLookupProps extends ComboboxProps {
-  assignedSmes: AssignedSme[];
+  controlProps: ControlProps;
+  smeRequestId: string;
   selectedItem: ComponentFramework.LookupValue | undefined;
+  assignedSmes: AssignedSme[];
   resourceRequest: ResourceRequest | undefined;
   filterSmes?: boolean;
   onInputChange: (sme: ComponentFramework.LookupValue | undefined) => void;
@@ -90,12 +94,14 @@ const useStyles = makeStyles({
 
 export const SmeLookup = (props: SmeLookupProps) => {
   const {
+    controlProps,
     assignedSmes,
-    selectedItem,
     resourceRequest,
-    filterSmes,
+    selectedItem,
+    smeRequestId,
     ...comboboxProps
   } = props;
+  const { restrictToResourceRequest } = controlProps;
   const comboId = useId("reactSmeLookupCombobox");
   const styles = useStyles();
 
@@ -105,7 +111,7 @@ export const SmeLookup = (props: SmeLookupProps) => {
   const [validSme, setValidSme] = React.useState(true);
 
   const groups = assignedSmes.map((sme) => {
-    if (filterSmes) {
+    if (restrictToResourceRequest) {
       const isValidSme = resourceRequest?.assignedSmes.some((assignedSme) => {
         return assignedSme.id === sme.id;
       });
@@ -120,6 +126,7 @@ export const SmeLookup = (props: SmeLookupProps) => {
 
   React.useEffect(() => {
     if (selectedItem) {
+      console.debug("SmeLookup.selectedItem", selectedItem);
       const selectedSme = assignedSmes.find(
         (sme) => sme.id === selectedItem.id
       );
@@ -131,7 +138,7 @@ export const SmeLookup = (props: SmeLookupProps) => {
     } else {
       setValue("");
     }
-  }, [selectedItem, assignedSmes]);
+  }, [selectedItem, assignedSmes, controlProps]);
 
   React.useEffect(() => {
     if (selectedItem && resourceRequest) {
@@ -140,7 +147,7 @@ export const SmeLookup = (props: SmeLookupProps) => {
       });
       setValidSme(isValidSme);
     }
-  }, [selectedItem, resourceRequest]);
+  }, [selectedItem, resourceRequest, controlProps]);
 
   const onOptionSelect: ComboboxProps["onOptionSelect"] = (e, data) => {
     setOpenSearch(false);
@@ -157,7 +164,7 @@ export const SmeLookup = (props: SmeLookupProps) => {
 
   const filteredOptions = assignedSmes
     .filter((sme) => {
-      const isValidSme = filterSmes
+      const isValidSme = restrictToResourceRequest
         ? resourceRequest?.assignedSmes.some((assignedSme) => {
             return assignedSme.id === sme.id;
           })
@@ -253,6 +260,17 @@ export const SmeLookup = (props: SmeLookupProps) => {
           *Selected SME not associated with the Resource Request
         </div>
       )}
+
+      <div>
+        <OverlappingRequests
+          assignedSme={
+            assignedSmes.find((sme) => sme.id === selectedItem?.id) ??
+            new AssignedSme()
+          }
+          smeRequestId={smeRequestId}
+          controlProps={controlProps}
+        />
+      </div>
     </div>
   );
 };

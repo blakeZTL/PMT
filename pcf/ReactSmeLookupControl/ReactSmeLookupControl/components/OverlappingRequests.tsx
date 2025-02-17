@@ -58,12 +58,12 @@ const useStyles = makeStyles({
     cursor: "pointer",
   },
   tableTitle: {
-    fontSize: "14px",
+    fontSize: "16px",
     fontWeight: "semibold",
     marginBottom: "3px",
   },
   tableSubTitle: {
-    fontSize: "10px",
+    fontSize: "12px",
     marginBottom: "10px",
     color: "#6d6c6b",
     paddingLeft: "10px",

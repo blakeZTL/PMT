@@ -2,6 +2,7 @@ import * as React from "react";
 import { AssignedSme, IAssignedSmeApiResult } from "../types/AssignedSme";
 import { mockAssignedSmeData } from "../data/mockAssignedSme";
 import { mockResourceRequest } from "../data/mockResourceRequest";
+import { mockSmeRequest } from "../data/mockSmeRequest";
 import { AssignedSmeService } from "../services/AssignedSmeService";
 import { SmeLookup } from "./SmeLookup";
 import { ControlProps } from "../types/ControlProps";
@@ -18,13 +19,8 @@ export interface IContainerProps {
 
 export const Container = (props: IContainerProps) => {
   const { controlProps, onInputChange } = props;
-  const {
-    context,
-    environment,
-    selectedItem,
-    resourceRequest,
-    restrictToResourceRequest,
-  } = controlProps;
+  const { context, environment, selectedItem, resourceRequest, smeRequestId } =
+    controlProps;
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [assignedSmes, setAssignedSmes] = React.useState<AssignedSme[]>([]);
@@ -33,6 +29,9 @@ export const Container = (props: IContainerProps) => {
   >(selectedItem ?? undefined);
   const [resourceRequestRecord, setResourceRequestRecord] = React.useState<
     ResourceRequest | undefined
+  >(undefined);
+  const [smeRequestGuid, setSmeRequestGuid] = React.useState<
+    string | undefined
   >(undefined);
   console.debug("Container.ControlProps: ", controlProps);
 
@@ -52,18 +51,15 @@ export const Container = (props: IContainerProps) => {
           entityType: "pmt_assignedsme",
         });
       }
-      //if (restrictToResourceRequest) {
+
       const resourceRequest = ResourceRequest.fromJson(
         mockResourceRequest.value[0] as IResourceRequestApiResult
       );
       setResourceRequestRecord(resourceRequest);
-      // const filteredSmes = smes.filter((sme) => {
-      //   return resourceRequest.assignedSmes.some((assignedSme) => {
-      //     return assignedSme.id === sme.id;
-      //   });
-      // });
-      // setAssignedSmes(filteredSmes);
-      //}
+
+      const smeRequest = mockSmeRequest.value[0];
+      setSmeRequestGuid(smeRequest.pmt_smerequestid);
+
       setIsLoading(false);
     } else {
       const assignedSmeService = new AssignedSmeService(context);
@@ -79,42 +75,42 @@ export const Container = (props: IContainerProps) => {
           setIsLoading(false);
         });
       setSelectedSme(selectedItem);
-      //restrictToResourceRequest &&
       if (resourceRequest?.id) {
         const resourceRequestService = new ResourceRequestService(context);
         resourceRequestService
           .getResourceRequest(resourceRequest?.id)
           .then((data) => {
             setResourceRequestRecord(data);
-            // const filteredSmes = assignedSmes.filter((sme) => {
-            //   return data.assignedSmes.some((assignedSme) => {
-            //     return assignedSme.id === sme.id;
-            //   });
-            // });
-            // setAssignedSmes(filteredSmes);
             return;
           })
           .catch((error) => {
             console.error("Error fetching resource request: ", error);
           });
       }
+      setSmeRequestGuid(smeRequestId);
     }
-  }, [selectedItem, environment, context, resourceRequest]);
-
-  console.debug("Container.ResourceRequest: ", resourceRequestRecord);
+  }, [
+    selectedItem,
+    environment,
+    context,
+    resourceRequest,
+    smeRequestId,
+    controlProps,
+  ]);
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  return (
+  return smeRequestGuid ? (
     <SmeLookup
-      assignedSmes={assignedSmes}
+      controlProps={controlProps}
+      smeRequestId={smeRequestGuid}
       selectedItem={selectedSme}
+      assignedSmes={assignedSmes}
       resourceRequest={resourceRequestRecord}
-      filterSmes={restrictToResourceRequest}
       onInputChange={(sme) => {
         setSelectedSme(sme);
         onInputChange(sme);
       }}
     />
-  );
+  ) : null;
 };

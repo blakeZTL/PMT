@@ -67,6 +67,7 @@ export const Container = (props: IContainerProps) => {
         .getAssignedSmes()
         .then((data) => {
           setAssignedSmes(data);
+          console.debug("Container.AssignedSmes: ", data);
           setIsLoading(false);
           return;
         })

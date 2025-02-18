@@ -20,6 +20,18 @@ export const mockAssignedSmeData = {
               pmt_smehourid: "c44f5e61-e3eb-ef11-be20-7c1e5248a34a",
               pmt_hours: 8.0,
             },
+            {
+              pmt_date: "2025-02-18T00:00:00Z",
+              pmt_autoid: "1005",
+              pmt_smehourid: "26b0af40-2ced-ef11-be20-7c1e5267196e",
+              pmt_hours: 8.0,
+            },
+            {
+              pmt_date: "2025-02-19T00:00:00Z",
+              pmt_autoid: "1006",
+              pmt_smehourid: "2ab0af40-2ced-ef11-be20-7c1e5267196e",
+              pmt_hours: 8.0,
+            },
           ],
         },
         {
@@ -30,6 +42,30 @@ export const mockAssignedSmeData = {
               pmt_date: "2025-02-17T00:00:00Z",
               pmt_autoid: "1001",
               pmt_smehourid: "ad9d6345-ebeb-ef11-be20-7c1e5248a34a",
+              pmt_hours: 8.0,
+            },
+            {
+              pmt_date: "2025-02-18T00:00:00Z",
+              pmt_autoid: "1003",
+              pmt_smehourid: "c2e8592d-2ced-ef11-be20-7c1e5267196e",
+              pmt_hours: 8.0,
+            },
+          ],
+        },
+        {
+          pmt_autoid: "1002",
+          pmt_smerequestid: "3bdc50c5-d3ec-ef11-be20-7c1e5267196e",
+          pmt_smehour_Request_pmt_smerequest: [
+            {
+              pmt_date: "2025-02-17T00:00:00Z",
+              pmt_autoid: "1002",
+              pmt_smehourid: "c64e6cd1-d3ec-ef11-be20-7c1e5267196e",
+              pmt_hours: 8.0,
+            },
+            {
+              pmt_date: "2025-02-19T00:00:00Z",
+              pmt_autoid: "1004",
+              pmt_smehourid: "3cb66b34-2ced-ef11-be20-7c1e5267196e",
               pmt_hours: 8.0,
             },
           ],

@@ -78,8 +78,6 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
     console.error("OverlappingRequests.smeRequestId is required");
     return null;
   }
-  console.debug("OverlappingRequests.assignedSme: ", assignedSme);
-  console.debug("OverlappingRequests.smeRequestId: ", smeRequestId);
   const styles = useStyles();
 
   const columns = [
@@ -121,6 +119,7 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
   const [overlappingRequests, setOverlappingRequests] = React.useState<
     IOverlappingSmeRequest[]
   >([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
     const requests: { smeRequest: SmeRequest; date: string; hours: number }[] =
@@ -128,17 +127,21 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
     const currentSmeRequest = assignedSme.smeRequests.find(
       (smeRequest) => smeRequest.pmt_smerequestid === smeRequestId
     );
-    console.debug("OverlappingRequests.currentSmeRequest: ", currentSmeRequest);
     const otherSmeRequests = assignedSme.smeRequests.filter(
       (smeRequest) => smeRequest.pmt_smerequestid !== smeRequestId
     );
-    console.debug("OverlappingRequests.otherSmeRequests: ", otherSmeRequests);
     currentSmeRequest?.pmt_smehour_Request_pmt_smerequest?.forEach((hour) => {
       const date = hour.pmt_date;
       otherSmeRequests?.forEach((otherSmeRequest) => {
         otherSmeRequest.pmt_smehour_Request_pmt_smerequest?.forEach(
           (otherHour) => {
-            if (otherHour.pmt_date === date) {
+            if (
+              otherHour.pmt_date === date &&
+              !requests.some(
+                (request) =>
+                  request.smeRequest.id === otherSmeRequest.pmt_smerequestid
+              )
+            ) {
               requests.push({
                 smeRequest: new SmeRequest(
                   otherSmeRequest.pmt_smerequestid,
@@ -153,9 +156,9 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
       });
     });
     if (controlProps.environment === "DEV") {
+      setOverlappingRequests([]);
       console.debug("OverlappingRequests: Using mock data");
       const smeRequestData = mockSmeRequest;
-      console.debug("OverlappingRequests.requests: ", requests);
       requests.forEach((request) => {
         const smeRequest = smeRequestData.value.find(
           (item) => item.pmt_smerequestid === request.smeRequest.id
@@ -172,7 +175,9 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
           setOverlappingRequests((prev) => [...prev, overlappingSmeRequest]);
         }
       });
+      setIsLoading(false);
     } else {
+      setOverlappingRequests([]);
       const smeRequestService = new SmeRequestService(context);
       requests.forEach((request) => {
         smeRequestService
@@ -190,21 +195,16 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
             console.error("Error getting smeRequest: ", error);
           });
       });
+      setIsLoading(false);
     }
   }, [assignedSme, context, smeRequestId, controlProps]);
 
-  console.debug(
-    "OverlappingRequests.overlappingRequests: ",
-    overlappingRequests
-  );
-
   const goToSmeRequest = (smeRequestId: string) => {
-    console.debug("OverlappingRequests.goToSmeRequest: ", smeRequestId);
     context.navigation
       .openForm({
         entityName: "pmt_smerequest",
         entityId: smeRequestId,
-        openInNewWindow: true,
+        windowPosition: 2,
       })
       .then((success) => {
         return;
@@ -214,7 +214,9 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
       });
   };
 
-  return overlappingRequests.length > 0 ? (
+  return isLoading ? (
+    <div>Checking for overlapping requests...</div>
+  ) : overlappingRequests.length > 0 ? (
     <div className={styles.root}>
       <div className={styles.tableTitle}>Overlapping Requests</div>
       <div className={styles.tableSubTitle}>

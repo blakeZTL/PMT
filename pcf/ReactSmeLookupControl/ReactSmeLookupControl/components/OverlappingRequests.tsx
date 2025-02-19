@@ -115,7 +115,6 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
     },
   ];
 
-  //TODO: Table is showing duplicate data when selected SME is cleared and then selected again
   const [overlappingRequests, setOverlappingRequests] = React.useState<
     IOverlappingSmeRequest[]
   >([]);

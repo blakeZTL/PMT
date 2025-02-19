@@ -130,18 +130,23 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
     const otherSmeRequests = assignedSme.smeRequests.filter(
       (smeRequest) => smeRequest.pmt_smerequestid !== smeRequestId
     );
+    const sortedOtherSmeRequests = otherSmeRequests.sort((a, b) => {
+      const autoIdComparison = a.pmt_autoid.localeCompare(b.pmt_autoid);
+      if (autoIdComparison !== 0) {
+        return autoIdComparison;
+      }
+      return 0;
+    });
     currentSmeRequest?.pmt_smehour_Request_pmt_smerequest?.forEach((hour) => {
       const date = hour.pmt_date;
-      otherSmeRequests?.forEach((otherSmeRequest) => {
+      sortedOtherSmeRequests?.forEach((otherSmeRequest) => {
+        console.debug(
+          "Checking for overlaps on SME Request: " + otherSmeRequest.pmt_autoid,
+          otherSmeRequest
+        );
         otherSmeRequest.pmt_smehour_Request_pmt_smerequest?.forEach(
           (otherHour) => {
-            if (
-              otherHour.pmt_date === date &&
-              !requests.some(
-                (request) =>
-                  request.smeRequest.id === otherSmeRequest.pmt_smerequestid
-              )
-            ) {
+            if (otherHour.pmt_date === date) {
               requests.push({
                 smeRequest: new SmeRequest(
                   otherSmeRequest.pmt_smerequestid,
@@ -179,25 +184,61 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
     } else {
       setOverlappingRequests([]);
       const smeRequestService = new SmeRequestService(context);
-      requests.forEach((request) => {
-        smeRequestService
-          .getSmeRequest(request.smeRequest.id)
-          .then((smeRequest) => {
-            const overlappingSmeRequest = {
-              smeRequest,
-              date: request.date,
-              hours: request.hours,
-            };
-            setOverlappingRequests((prev) => [...prev, overlappingSmeRequest]);
-            return;
-          })
-          .catch((error) => {
-            console.error("Error getting smeRequest: ", error);
-          });
-      });
-      setIsLoading(false);
+      Promise.all(
+        requests.map((request) => {
+          return smeRequestService
+            .getSmeRequest(request.smeRequest.id)
+            .then((smeRequest) => {
+              if (smeRequest) {
+                const overlappingSmeRequest = {
+                  smeRequest,
+                  date: request.date,
+                  hours: request.hours,
+                };
+                console.debug("Fetched smeRequest: ", overlappingSmeRequest);
+                return overlappingSmeRequest;
+              } else {
+                console.debug(
+                  "No smeRequest found for id: ",
+                  request.smeRequest.id
+                );
+                return null;
+              }
+            })
+            .catch((error) => {
+              console.error("Error getting smeRequest: ", error);
+              return null;
+            });
+        })
+      )
+        .then((results) => {
+          console.debug("OverlappingRequests results: ", results);
+          const validResults = results.filter((result) => result !== null);
+          setOverlappingRequests(validResults as IOverlappingSmeRequest[]);
+          setIsLoading(false);
+          return;
+        })
+        .catch((error) => {
+          console.error("Error in Promise.all: ", error);
+          setIsLoading(false);
+        });
     }
   }, [assignedSme, context, smeRequestId, controlProps]);
+
+  const sortOverlappingRequests = (requests: IOverlappingSmeRequest[]) => {
+    const uniqueResults = new Set(requests.filter((result) => result !== null));
+    return Array.from(uniqueResults).sort(
+      (a: IOverlappingSmeRequest, b: IOverlappingSmeRequest) => {
+        const autoIdComparison = a.smeRequest.autoId.localeCompare(
+          b.smeRequest.autoId
+        );
+        if (autoIdComparison !== 0) {
+          return autoIdComparison;
+        }
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }
+    );
+  };
 
   const goToSmeRequest = (smeRequestId: string) => {
     context.navigation
@@ -239,7 +280,7 @@ export const OverlappingRequests = (props: IOverlappingRequestsProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {overlappingRequests.map((request) => {
+          {sortOverlappingRequests(overlappingRequests).map((request) => {
             return (
               <TableRow key={request.smeRequest.id} className={styles.row}>
                 <TableCell
